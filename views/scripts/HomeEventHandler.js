@@ -84,6 +84,14 @@ function actualizarModal(pregunta) {
 }
 
 function handleNextQuestion() {
+    // Verificar si se ha seleccionado una opción
+    const opciones = document.querySelectorAll('input[name="value-radio"]:checked');
+    if (opciones.length === 0) {
+        // Si no se ha seleccionado ninguna opción, mostrar una alerta
+        alert("Selecciona una opción antes de continuar");
+        return; // No avanzar a la siguiente pregunta
+    }
+
     preguntaActual++;
     if (preguntaActual < preguntas.length) {
         actualizarModal(preguntas[preguntaActual]);
@@ -92,6 +100,8 @@ function handleNextQuestion() {
         window.location.href = 'rutina.html';
     }
 }
+
+document.getElementById('nextQuestion').addEventListener('click', handleNextQuestion);
 
 document.addEventListener('DOMContentLoaded', function() {
     actualizarModal(preguntas[0]); // Carga la primera pregunta
