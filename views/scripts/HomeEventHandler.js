@@ -1,3 +1,5 @@
+alert("¡Si no lo has hecho, crea una cuenta para guardar tu rutina!");
+
 const preguntas = [
     {
         titulo: "¿Cuál es tu nivel de experiencia en el entrenamiento con pesas?",
