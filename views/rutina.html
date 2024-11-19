@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Rutina</title>
+        <!-- Required meta tags -->
+        <meta charset="utf-8" />
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no"
+        />
+
+        <!-- FONT AWESOME LINK para poder usar los iconos -->
+        <script src="https://kit.fontawesome.com/c88f2a7fc4.js" crossorigin="anonymous"></script>
+
+        <!-- Bootstrap CSS v5.2.1 -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+            crossorigin="anonymous"
+        />
+
+        <!-- Modal Inicio de Sesión -->
+<div class="modal fade" id="modal_1" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitleId">Iniciar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="loginForm">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Correo</label>
+                        <div class="input-group">
+                            <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa tu correo" required />
+                            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Contraseña</label>
+                        <div class="input-group">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required />
+                            <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Recordar</label>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="submit" form="loginForm" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div>¿No tienes cuenta? <a href="#" data-bs-toggle="modal" data-bs-target="#registroModal">Regístrate aquí</a></div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fin Modal Inicio de Sesión -->
+
+<!-- Modal Cerrar Sesión -->
+<div class="modal fade" id="modal_2" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitleId">Cerrar Sesión</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">¿Estás seguro de que deseas cerrar sesión?</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">No</button>
+                <button type="button" class="btn btn-primary">Sí</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fin Modal Cerrar Sesión -->
+
+<!-- Modal Registro de Usuarios -->
+<div class="modal fade" id="registroModal" tabindex="-1" role="dialog" aria-labelledby="modalTitleId" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitleId">Registrarse</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre(s)" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Apellidos" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="email" class="form-control" id="correo" name="correo" placeholder="Tu correo" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+                    </div>
+                    <div class="mb-3">
+                        <input type="password" class="form-control" id="confContraseña" name="confContraseña" placeholder="Confirmar Contraseña" required>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Registrarse</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Fin Modal Registro de Usuarios -->
+
+<link rel="stylesheet" href="styles/rutinaStyles.css">
+
+
+
+    </head>
+
+    <body style="background-color: #27292b;">
+        <header>
+            <header>
+                <nav
+                class="navbar navbar-expand-sm navbar-dark bg-dark"
+            >
+                <div class="container">
+                    <!-- Logo y botón para pantallas pequeñas -->
+                  <a class="navbar-brand" href="rutina.html">
+                    <img src="https://icons.iconarchive.com/icons/icons8/ios7/512/Sports-Dumbbell-icon.png" alt="Logo" width="40" height="40">
+                  </a>
+                  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                  </button>
+                  
+                  <!-- Elementos de la barra de navegación -->
+                  <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                      <li class="nav-item">
+                        <a class="nav-link active" style="color: whitesmoke" aria-current="page" href="rutina.html">B-FIT</a>
+                      </li>
+                    </ul>
+                    <button
+                        class="navbar-toggler d-lg-none"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#collapsibleNavId"
+                        aria-controls="collapsibleNavId"
+                        aria-expanded="false"
+                        aria-label="Toggle navigation"
+                    >
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="collapsibleNavId">
+                        <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                            
+                            <li class="nav-item">
+                                <a class="nav-link" href="ejercicios.html">Todos los ejercicios</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="calendario.html">Calendario / Progreso</a>
+                            </li>
+                        </ul>
+                        <!-- Cosas a la derecha del NAVBAR -->
+                        
+                            <a href="#" class="btn btn-outline-light ms-2" data-bs-toggle="modal" data-bs-target="#modal_1" role="button">
+                                <i class="fa-solid fa-user"></i>
+                            </a>                        
+                        
+                    </div>
+                </div>
+            </nav>
+                
+            </header>
+        </header>
+        <main>
+            <div class="container mt-5">
+                <h1 class="" style="color: whitesmoke; margin-bottom: 50px;">Tu rutina de hoy</h1>
+                <div class="row">
+                    <div class="col-md-8">
+                        <!-- Tarjeta para el ejercicio Squat sin peso -->
+                        <div class="card mb-3">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="https://www.inspireusafoundation.org/wp-content/uploads/2021/06/bodyweight-wall-squat-1024x754.png" class="img-fluid rounded-start" alt="Squat sin peso">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Squat sin peso</h5>
+                                        <p class="card-text">15 repeticiones</p>
+                                        <button class="btn btn-primary">Lo terminaste?</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Tarjeta para el ejercicio Peso Muerto -->
+                        <div class="card mb-3">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="https://training.fit/wp-content/uploads/2020/03/kreuzheben-gestreckte-beine.png" class="img-fluid rounded-start" alt="Peso Muerto">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Peso Muerto</h5>
+                                        <p class="card-text">12 Repeticiones - Selecciona un peso entre 120 - 150 lbs</p>
+                                        <button class="btn btn-primary">Lo terminaste?</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Panel de progreso -->
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Progreso de hoy</h5>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Squat sin peso
+                                        <span class="badge bg-primary rounded-pill">X</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Peso Muerto
+                                        <span class="badge bg-primary rounded-pill">✔</span>
+                                    </li>
+                                </ul>
+                                <div class="progress mt-3">
+                                    <div class="progress-bar" style="width: 50%;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>               
+        </main>
+        <footer>
+            <!-- place footer here -->
+        </footer>
+        <!-- Bootstrap JavaScript Libraries -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+            integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+            crossorigin="anonymous"
+        ></script>
+
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+            integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+            crossorigin="anonymous"
+        ></script>
+
+        <script src="scripts/rutinaEventHandler.js"></script>
+    </body>
+</html>
