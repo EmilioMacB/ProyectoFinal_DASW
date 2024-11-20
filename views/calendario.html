@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Entrenamientos</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://kit.fontawesome.com/c88f2a7fc4.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <!-- Navbar -->
+<nav class="navbar">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+        <i class="fa-solid fa-dumbbell"></i> B-FIT
+    </a>
+
+    <!-- Links -->
+    <div class="nav-links">
+        <a class="nav-link" href="#">Todos los ejercicios</a>
+        <a class="nav-link" href="#">Calendario / Progreso</a>
+        <a class="btn btn-outline-light" href="#">
+            <i class="fa-solid fa-user"></i>
+        </a>
+    </div>
+</nav>
+
+
+    <!-- Contenido Principal -->
+    <main>
+        <section id="contenedor">
+            <div id="calendario">
+                <h2>Entrenamientos Del Mes</h2>
+                <h3>Noviembre</h3>
+                <table id="tabla-calendario">
+                    <thead>
+                        <tr>
+                            <th>Lu</th>
+                            <th>Ma</th>
+                            <th>Mi</th>
+                            <th>Ju</th>
+                            <th>Vi</th>
+                            <th>Sa</th>
+                            <th>Do</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Días generados dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <div id="racha">
+                <h3>Racha Ejercitándote</h3>
+                <div id="streak-content">
+                    <img id="streak-image" src="low-streak.png" alt="Streak Image">
+                    <button id="streak-button">0 day streak!</button>
+                </div>
+            </div>            
+        </section>
+    </main>
+    <script src="todos-ejercicios.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,184 @@
+/* Aplicar Playfair Display solo a los títulos */
+h1, h2, h3 {
+    font-family: 'Playfair Display', serif;
+    color: #fff; /* Color blanco para mantener consistencia */
+}
+
+/* Estilo general */
+body {
+    font-family: 'Roboto', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #202030; /* Fondo oscuro */
+    color: #fff;
+}
+
+/* Navbar */
+.navbar {
+    background-color: #202030; /* Fondo oscuro */
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #435dd8; /* Borde inferior */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-brand {
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-brand i {
+    margin-right: 8px;
+    font-size: 24px; /* Tamaño del ícono */
+}
+
+.navbar .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.nav-link {
+    font-size: 16px;
+    text-decoration: none;
+    color: #fff;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #00b4d8; /* Azul brillante */
+}
+
+/* Botón circular de perfil */
+.btn-outline-light {
+    border: 1px solid #fff;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    font-size: 18px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.btn-outline-light:hover {
+    background-color: #fff;
+    color: #202030;
+}
+
+/* Ocultar el encabezado antiguo */
+header {
+    display: none; /* Ocultar el encabezado original */
+}
+
+/* Contenedor principal */
+#contenedor {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 30px;
+    padding: 20px;
+}
+
+/* Estilo del calendario */
+#calendario {
+    background-color: #2a2e3c; /* Fondo oscuro */
+    border: 1px solid #435dd8; /* Borde azul */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.121);
+    width: 60%;
+}
+
+h2 {
+    color: #f7f7f7;
+    margin: 0 0 10px 0;
+}
+
+h3 {
+    color: #060101;
+    margin: 0 0 10px 0;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed; /* Asegura que todos los días tengan el mismo tamaño */
+}
+
+th, td {
+    border: 1px solid #435dd8; /* Borde azul */
+    text-align: center;
+    padding: 20px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: #2d3750; /* Fondo oscuro */
+    color: #fff;
+}
+
+td.marcado {
+    background-color: #435dd8; /* Fondo azul para días seleccionados */
+    color: white;
+    transition: all 0.2s;
+}
+
+/* Estilo de la racha */
+#racha {
+    background-color: #fff; /* Fondo blanco para destacar imagen */
+    border: 1px solid #435dd8; /* Borde azul */
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 30%;
+    text-align: center;
+    color: black; /* Texto negro para contraste */
+}
+
+#streak-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+#streak-image {
+    width: 100px;
+    height: auto;
+    transition: transform 0.3s ease;
+}
+
+#streak-image.active {
+    transform: scale(1.2);
+}
+
+#streak-button {
+    background-color: #435dd8; /* Botón azul */
+    color: white;
+    border: none;
+    padding: 20px 30px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Roboto', Arial, sans-serif;
+}
+
+#streak-button:hover {
+    background-color: rgb(255, 255, 255);
+    color: black;
+    border: 1px solid black;
+}
+
+/* Botón activo */
+button:active {
+    transform: scale(0.95);
+}
