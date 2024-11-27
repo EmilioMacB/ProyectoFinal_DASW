@@ -2,20 +2,22 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
-    Name: {
-        type: String,
-        required: true,
-    },
-    Email: {
-        type: String,
-        required: true,
-        unique: true,
-    },
-    Password: {
-        type: String,
-        required: true,
+    Name: { 
+        type: String, 
+        required: true },
+    Email: { 
+        type: String, 
+        required: true, 
+        unique: true },
+    Password: { 
+        type: String, 
+        required: true },
+    Routine: {
+        type: Object, // Rutina personalizada (puede ser más detallado)
+        default: null,
     },
 });
+
 
 // Encriptar contraseña antes de guardar
 userSchema.pre("save", async function (next) {

@@ -180,64 +180,27 @@
         </header>
         <main>
             <div class="container mt-5">
-                <h1 class="" style="color: whitesmoke; margin-bottom: 50px;">Tu rutina de hoy</h1>
+                <h1 style="color: whitesmoke; margin-bottom: 50px;">Tu rutina de hoy</h1>
                 <div class="row">
-                    <div class="col-md-8">
-                        <!-- Tarjeta para el ejercicio Squat sin peso -->
-                        <div class="card mb-3">
-                            <div class="row g-0">
-                                <div class="col-md-4">
-                                    <img src="https://www.inspireusafoundation.org/wp-content/uploads/2021/06/bodyweight-wall-squat-1024x754.png" class="img-fluid rounded-start" alt="Squat sin peso">
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Squat sin peso</h5>
-                                        <p class="card-text">15 repeticiones</p>
-                                        <button class="btn btn-primary">Lo terminaste?</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Tarjeta para el ejercicio Peso Muerto -->
-                        <div class="card mb-3">
-                            <div class="row g-0">
-                                <div class="col-md-4">
-                                    <img src="https://training.fit/wp-content/uploads/2020/03/kreuzheben-gestreckte-beine.png" class="img-fluid rounded-start" alt="Peso Muerto">
-                                </div>
-                                <div class="col-md-8">
-                                    <div class="card-body">
-                                        <h5 class="card-title">Peso Muerto</h5>
-                                        <p class="card-text">12 Repeticiones - Selecciona un peso entre 120 - 150 lbs</p>
-                                        <button class="btn btn-primary">Lo terminaste?</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Panel de progreso -->
+                    <!-- Contenedor dinámico para la rutina -->
+                    <div id="rutinaContainer" class="col-md-8"></div>
+        
+                    <!-- Contenedor para el progreso -->
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-body">
                                 <h5 class="card-title">Progreso de hoy</h5>
-                                <ul class="list-group">
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Squat sin peso
-                                        <span class="badge bg-primary rounded-pill">X</span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                                        Peso Muerto
-                                        <span class="badge bg-primary rounded-pill">✔</span>
-                                    </li>
-                                </ul>
+                                <ul id="progressList" class="list-group"></ul>
                                 <div class="progress mt-3">
-                                    <div class="progress-bar" style="width: 50%;"></div>
+                                    <div class="progress-bar" style="width: 0%;" id="progressBar"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>               
+            </div>
         </main>
+        
         <footer>
             <!-- place footer here -->
         </footer>
