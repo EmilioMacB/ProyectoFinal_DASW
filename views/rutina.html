@@ -88,31 +88,34 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="container-fluid">
-                    <div class="mb-3">
-                        <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre(s)" required>
+                <form id="registerForm">
+                    <div class="container-fluid">
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="nombre" name="nombre" placeholder="Nombre(s)" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Apellidos" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" id="correo" name="correo" placeholder="Tu correo" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder="Contraseña" required>
+                        </div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" id="confContraseña" name="confContraseña" placeholder="Confirmar Contraseña" required>
+                        </div>
                     </div>
-                    <div class="mb-3">
-                        <input type="text" class="form-control" id="apellido" name="apellido" placeholder="Apellidos" required>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Registrarse</button>
                     </div>
-                    <div class="mb-3">
-                        <input type="email" class="form-control" id="correo" name="correo" placeholder="Tu correo" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control" id="contraseña" name="contraseña" placeholder="Contraseña" required>
-                    </div>
-                    <div class="mb-3">
-                        <input type="password" class="form-control" id="confContraseña" name="confContraseña" placeholder="Confirmar Contraseña" required>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Registrarse</button>
+                </form>
             </div>
         </div>
     </div>
 </div>
 <!-- Fin Modal Registro de Usuarios -->
+
 
 <link rel="stylesheet" href="styles/rutinaStyles.css">
 
