@@ -137,37 +137,39 @@
 
 
     <!-- Contenido Principal -->
-    <main>
-        <section id="contenedor">
-            <div id="calendario">
-                <h2>Entrenamientos Del Mes</h2>
-                <h3>Noviembre</h3>
-                <table id="tabla-calendario">
-                    <thead>
-                        <tr>
-                            <th>Lu</th>
-                            <th>Ma</th>
-                            <th>Mi</th>
-                            <th>Ju</th>
-                            <th>Vi</th>
-                            <th>Sa</th>
-                            <th>Do</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!-- Días generados dinámicamente -->
-                    </tbody>
-                </table>
-            </div>
-            <div id="racha">
-                <h3>Racha Ejercitándote</h3>
-                <div id="streak-content">
-                    <img id="streak-image" src="low-streak.png" alt="Streak Image">
-                    <button id="streak-button">0 day streak!</button>
-                </div>
-            </div>            
-        </section>
-    </main>
+<main class="container">
+    <section class="calendario-wrapper">
+        <h2>Entrenamientos Del Mes</h2>
+        <div class="month-navigation">
+            <button id="prev" class="arrow">&lt;</button>
+            <p class="current date">Noviembre 2024</p>
+            <button id="next" class="arrow">&gt;</button>
+        </div>
+        <table class="calendario">
+            <thead>
+            <tr>
+                <th>Lu</th>
+                <th>Ma</th>
+                <th>Mi</th>
+                <th>Ju</th>
+                <th>Vi</th>
+                <th>Sa</th>
+                <th>Do</th>
+            </tr>
+            </thead>
+            <tbody class="dias">
+            <!-- Días generados dinámicamente -->
+            </tbody>
+        </table>
+    </section>
+    <section id="racha">
+        <h3>Racha Ejercitándote</h3>
+        <div id="streak-content">
+            <img id="streak-image" src="" alt="Imagen de racha">
+            <button id="streak-button">¡0 días consecutivos!</button>
+        </div>
+    </section>
+</main>
     <script src="todos-ejercicios.js"></script>
     <script src="scripts/calendarioEventHandler.js"></script>
     <script
