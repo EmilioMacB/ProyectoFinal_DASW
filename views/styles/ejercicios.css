@@ -1,171 +1,60 @@
 /* General */
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background-color: #1a1a2e;
-    color: #ffffff;
-  }
-  
-  /* Navbar */
-  .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: #16213e;
-    border-bottom: 2px solid #0f3460;
-  }
-  
-  .logo {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  
-  .logo .icon {
-    font-size: 1.8rem;
-  }
-  
-  .logo h1 {
-    font-size: 1.5rem;
-    color: #ffffff;
-  }
-  
-  .navbar {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-  
-  .nav-link {
-    color: #ffffff;
-    text-decoration: none;
-    font-size: 1rem;
-  }
-  
-  .btn-user {
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .btn-user img {
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-  }
-  
-  /* Main Container */
-  .main-container {
-    padding: 2rem;
-  }
-  
-  .section-title {
-    color: #e94560;
-    text-align: center;
-    margin-bottom: 2rem;
-  }
-  
-  /* Grupo muscular */
-  .grupo-muscular h3 {
-    color: #e94560;
-    margin-bottom: 1rem;
-  }
-  
-  /* Tarjetas */
-  .tarjetas {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-  }
-  
-  .tarjeta {
-    display: flex;
-    align-items: center;
-    background-color: #ffffff;
-    color: #000000;
-    border-radius: 10px;
-    padding: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .tarjeta:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
-  }
-  
-  .tarjeta img {
-    width: 100px; /* Tamaño controlado */
-    height: auto;
-    border-radius: 8px;
-    margin-right: 1rem;
-    object-fit: cover;
-  }
-  
-  .info h4 {
-    margin: 0.5rem 0;
-    color: #000000;
-  }
-  
-  .info p {
-    font-size: 0.9rem;
-  }
-  
-  .btn-terminado {
-    background-color: #007bff;
-    color: #ffffff;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    margin-top: 0.5rem;
-    transition: background-color 0.3s ease;
-  }
-  
-  .btn-terminado:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Progreso Diario */
-  .progreso-diario {
-    margin-top: 2rem;
-  }
-  
-  .progreso-diario h3 {
-    color: #e94560;
-    margin-bottom: 1rem;
-  }
-  
-  .barra-progreso-container {
-    background-color: #e0e0e0;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 1rem;
-    height: 20px;
-    width: 100%;
-  }
-  
-  .barra-progreso {
-    background-color: #28a745;
-    height: 100%;
-    width: 0;
-    text-align: center;
-    color: #ffffff;
-    font-size: 0.8rem;
-    line-height: 20px;
-    transition: width 0.3s ease;
-  }
-  
-  #progreso-lista {
-    list-style: none;
-    padding: 0;
-    margin: 0.5rem 0;
-  }
-  
-  #progreso-lista li {
-    color: #ffffff;
-    font-size: 0.9rem;
-  }
-  
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background-color: #1a1a2e;
+  color: #ffffff;
+}
+
+/* Navbar */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background-color: #16213e;
+  border-bottom: 2px solid #0f3460;
+}
+
+/* Formulario de filtros */
+.form-label {
+  color: #e94560;
+  font-weight: bold;
+}
+
+.text-center {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+#btnBuscar {
+  margin-top: 1.6rem;
+}
+
+/* Tarjetas */
+.card {
+  background-color: #ffffff;
+  color: #000000;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Filtros */
+.row.g-3 {
+  display: flex;
+  align-items: center; /* Centra verticalmente */
+  justify-content: center; /* Centra horizontalmente */
+  gap: 1rem; /* Añade espacio entre elementos */
+}
+
+#btnBuscar {
+  height: calc(100% - 8px); /* Ajusta la altura al tamaño de los selectores */
+  align-self: flex-end; /* Alinea el botón en la parte inferior */
+}

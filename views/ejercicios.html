@@ -115,8 +115,7 @@
 <body style="background-color: #27292b;">
     <header>
         <nav
-        class="navbar navbar-expand-sm navbar-dark bg-dark"
-    >
+        class="navbar navbar-expand-sm navbar-dark bg-dark">
         <div class="container">
             <!-- Logo y botón para pantallas pequeñas -->
           <a class="navbar-brand" href="rutina.html">
@@ -140,8 +139,7 @@
                 data-bs-target="#collapsibleNavId"
                 aria-controls="collapsibleNavId"
                 aria-expanded="false"
-                aria-label="Toggle navigation"
-            >
+                aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="collapsibleNavId">
@@ -154,80 +152,45 @@
                         <a class="nav-link" href="calendario.html">Calendario / Progreso</a>
                     </li>
                 </ul>
-                <!-- Cosas a la derecha del NAVBAR -->
-                
-                    <a href="#" class="btn btn-outline-light ms-2" data-bs-toggle="modal" data-bs-target="#modal_1" role="button">
-                        <i class="fa-solid fa-user"></i>
-                    </a>                        
-                
+                <!-- Cosas a la derecha del NAVBAR -->                 
             </div>
         </div>
-    </nav>
-    <link rel="stylesheet" href="styles/ejercicios.css">
-
     </header>
 
-    <!-- Contenido Principal -->
     <div class="container my-5">
-        <h2 class="text-center text-primary">Ejercicios</h2>
-        <!-- Categorías de ejercicios -->
-        <!-- Espalda -->
-        <section class="mt-4">
-            <h3 class="text-secondary">Espalda</h3>
-            <!-- Principiante -->
-            <h5 class="text-success mt-3">Principiante</h5>
-            <div class="row" id="espalda-principiante"></div>
-            <!-- Intermedio -->
-            <h5 class="text-warning mt-3">Intermedio</h5>
-            <div class="row" id="espalda-intermedio"></div>
-            <!-- Avanzado -->
-            <h5 class="text-danger mt-3">Avanzado</h5>
-            <div class="row" id="espalda-avanzado"></div>
-        </section>
+        <!-- Filtros -->
+        <h2 class="text-center text-primary">Busca tus Ejercicios</h2>
+        <div class="row g-3 justify-content-center">
+            <div class="col-md-4">
+              <label for="filtroMusculo" class="form-label" style="color: #e94560;">Selecciona un músculo:</label>
+              <select id="filtroMusculo" class="form-select">
+                <option value="todos">Todos</option>
+                <option value="espalda">Espalda</option>
+                <option value="pecho">Pecho</option>
+                <option value="brazos">Brazos</option>
+                <option value="piernas">Piernas</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label for="filtroNivel" class="form-label" style="color: #e94560;">Selecciona el nivel:</label>
+              <select id="filtroNivel" class="form-select">
+                <option value="todos">Todos</option>
+                <option value="principiante">Principiante</option>
+                <option value="intermedio">Intermedio</option>
+                <option value="avanzado">Avanzado</option>
+              </select>
+            </div>
+            <div class="col-md-4 d-flex align-items-end">
+                <button id="btnBuscar" class="btn btn-success w-100" style="height: 56%;">Buscar Ejercicios</button>
+            </div>
+          </div>
 
-        <!-- Pecho -->
-        <section class="mt-4">
-            <h3 class="text-secondary">Pecho</h3>
-            <!-- Principiante -->
-            <h5 class="text-success mt-3">Principiante</h5>
-            <div class="row" id="pecho-principiante"></div>
-            <!-- Intermedio -->
-            <h5 class="text-warning mt-3">Intermedio</h5>
-            <div class="row" id="pecho-intermedio"></div>
-            <!-- Avanzado -->
-            <h5 class="text-danger mt-3">Avanzado</h5>
-            <div class="row" id="pecho-avanzado"></div>
-        </section>
-
-        <!-- Brazos -->
-        <section class="mt-4">
-            <h3 class="text-secondary">Brazos</h3>
-            <!-- Principiante -->
-            <h5 class="text-success mt-3">Principiante</h5>
-            <div class="row" id="brazos-principiante"></div>
-            <!-- Intermedio -->
-            <h5 class="text-warning mt-3">Intermedio</h5>
-            <div class="row" id="brazos-intermedio"></div>
-            <!-- Avanzado -->
-            <h5 class="text-danger mt-3">Avanzado</h5>
-            <div class="row" id="brazos-avanzado"></div>
-        </section>
-
-        <!-- Piernas -->
-        <section class="mt-4">
-            <h3 class="text-secondary">Piernas</h3>
-            <!-- Principiante -->
-            <h5 class="text-success mt-3">Principiante</h5>
-            <div class="row" id="piernas-principiante"></div>
-            <!-- Intermedio -->
-            <h5 class="text-warning mt-3">Intermedio</h5>
-            <div class="row" id="piernas-intermedio"></div>
-            <!-- Avanzado -->
-            <h5 class="text-danger mt-3">Avanzado</h5>
-            <div class="row" id="piernas-avanzado"></div>
-        </section>
+        <!-- Resultados -->
+        <div id="resultados" class="mt-5 row"></div>
     </div>
 
+    <script src="scripts/ejercicios.js"></script>
+</body>
     <script src="scripts/ejercicios.js"></script>
 
      <!-- Bootstrap JavaScript Libraries -->
