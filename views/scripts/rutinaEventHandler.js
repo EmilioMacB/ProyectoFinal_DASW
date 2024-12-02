@@ -126,17 +126,19 @@ function mostrarRutina(rutina) {
 
     rutina.forEach((dia) => {
         const rutinaItem = document.createElement("div");
-        rutinaItem.classList.add("col-md-6", "mb-3");
+        rutinaItem.classList.add("col-md-6", "mb-4"); // Espacio entre tarjetas
         rutinaItem.innerHTML = `
-            <div class="card text-white bg-dark">
-                <div class="card-body">
-                    <h5 class="card-title">Día ${dia.day}</h5>
+            <div class="card rutina-card">
+                <h5 class="card-title text-center text-uppercase my-3"> ${dia.day}</h5>
+                <div class="rutina-body">
                     ${dia.exercises.map(ex => `
-                        <div>
-                            <img src="${ex.img}" alt="${ex.name}" class="img-fluid mb-2">
-                            <p>Ejercicio: ${ex.name}</p>
-                            <p>Repeticiones: ${ex.reps}</p>
-                            <p><a href="${ex.video}" target="_blank">Ver video</a></p>
+                        <div class="exercise-item d-flex align-items-center">
+                            <img src="${ex.img}" alt="${ex.name}" class="exercise-img me-3">
+                            <div>
+                                <p class="exercise-title mb-1"><strong>${ex.name}</strong></p>
+                                <p class="exercise-reps mb-1">${ex.reps}</p>
+                                <a href="${ex.video}" target="_blank" class="btn btn-link text-decoration-none">Ver Tutorial</a>
+                            </div>
                         </div>
                     `).join('')}
                 </div>
