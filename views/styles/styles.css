@@ -1,112 +1,99 @@
-/* Estilos generales */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+body {
+    background-color: #222831;
+    color: #ffffff;
     font-family: 'Poppins', sans-serif;
 }
 
-body {
-    background: #222831;
-    color: #fff;
-}
-
 .navbar {
-    background: #0f3460;
-    padding: 15px 20px;
+    background-color: #0f3460;
+    padding: 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    color: white;
 }
 
 .navbar-brand {
-    color: #fff;
     font-size: 1.5rem;
-    text-decoration: none;
-}
-
-.nav-links a {
-    color: #fff;
-    margin: 0 10px;
-    text-decoration: none;
-}
-
-.container {
-    display: flex;
-    justify-content: space-between;
-    padding: 20px;
+    font-weight: bold;
 }
 
 .calendario-wrapper {
-    background: #0f3460;
+    background: #1e2a38;
     padding: 20px;
     border-radius: 10px;
-    width: 65%;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-bottom: 20px;
+    color: white;
+    text-align: center;
 }
 
 .calendario-wrapper h2 {
-    margin-bottom: 10px;
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+    font-weight: bold;
 }
 
-.calendario-wrapper .current.date {
-    margin-bottom: 10px;
+.month-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.arrow {
+    background: none;
+    border: none;
+    color: #21c087;
     font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.calendario-wrapper .icons span {
-    cursor: pointer;
-    font-size: 1.5rem;
-    margin: 5px;
+.arrow:hover {
+    color: #3ce09c;
 }
 
 .calendario {
     width: 100%;
     border-collapse: collapse;
+    table-layout: fixed;
 }
 
-.calendario th, .calendario td {
-    border: 1px solid #ccc;
-    text-align: center;
+.calendario th,
+.calendario td {
     padding: 10px;
-    font-size: 1rem;
+    text-align: center;
+    border: 1px solid #ccc;
 }
 
-.dias td.inactive {
+.calendario td.inactive {
     color: #888;
 }
 
-.dias td.active {
+.calendario td.selected {
     background: #21c087;
     color: #fff;
-    border-radius: 50%;
-}
-/* Botón circular de perfil */
-.btn-outline-light {
-    border: 1px solid #fff;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: #fff;
-    font-size: 18px;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: bold;
 }
 
-/* Estilo de racha */
+/* Ajuste general */
+.container {
+    display: flex;
+    gap: 20px; /* Espaciado entre el calendario y la racha */
+}
+
+/* Ajustes específicos para la racha */
 #racha {
-    background: #f4f4f4;
-    color: #222;
+    background: #1e2a38;
+    color: #ffffff;
     padding: 20px;
     border-radius: 10px;
-    width: 25%;
-    height: 25%;
     text-align: center;
+    width: 30%;
+    height: fit-content;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border: 2px solid #3d5872; /* Borde para resaltar el cuadro */
 }
+
 #racha h3 {
     font-size: 1.5rem;
     margin-bottom: 15px;
@@ -117,15 +104,23 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px; /* Espacio entre los elementos */
+    gap: 10px;
 }
 
 #streak-content img {
-    width: 100px;
+    width: 120px;
     height: auto;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     object-fit: contain;
     transition: transform 0.3s ease;
+    border: 3px solid #21c087; /* Añade un borde para resaltar */
+    border-radius: 50%; /* Hace la imagen redonda */
+    background-color: white;
+    padding: 5px;
+}
+
+#streak-content img.active {
+    transform: scale(1.1);
 }
 
 #streak-button {
@@ -134,71 +129,112 @@ body {
     padding: 10px 20px;
     border-radius: 5px;
     color: #fff;
-    cursor: pointer;
     font-size: 1rem;
     font-weight: bold;
-    transition: background 0.3s ease;
-}
-#streak-button:hover {
-    background-color: #0056b3;
-    color: #fff;
-}
-#streak-image.active {
-    transform: scale(1.2);
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 #streak-button:hover {
     background: #1aa873;
+    transform: scale(1.05);
 }
 
-/* Estilos generales ya existentes */
+/* Calendario y racha adaptables en dispositivos pequeños */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+    }
 
-.calendario {
+    #racha {
+        width: 100%;
+    }
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
     width: 100%;
-    border-collapse: collapse;
-    table-layout: fixed; /* Asegura el ancho fijo por columna */
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: center;
+    align-items: center;
 }
 
-.calendario th, .calendario td {
-    border: 1px solid #ccc;
+.modal-content {
+    background: #0f3460;
+    padding: 20px;
+    border-radius: 8px;
     text-align: center;
-    padding: 10px;
-    font-size: 1rem;
-    cursor: pointer;
+    color: #fff;
 }
 
+#routineSelect {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 5px;
+    border: none;
+    font-size: 1rem;
+}
+
+/* Día seleccionado con rutina asignada */
 .calendario td.selected {
-    background: #21c087; /* Color para días seleccionados */
+    background: linear-gradient(145deg, #21c087, #1aa873); /* Degradado */
     color: #fff;
     font-weight: bold;
+    position: relative; /* Para posicionar el badge */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* Estilos generales ya existentes */
-
-.month-navigation {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 10px 0;
+.calendario td.selected:hover {
+    transform: scale(1.05); /* Efecto de zoom */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-.arrow {
-    background: none;
-    border: none;
-    font-size: 1.5rem;
-    cursor: pointer;
-    color: #fff;
-    transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.arrow:hover {
+/* Badge para mostrar la rutina */
+.calendario td .routine-label {
+    display: inline-block;
+    background: #fff;
     color: #21c087;
-    transform: scale(1.2);
+    font-size: 0.75rem;
+    font-weight: bold;
+    padding: 3px 6px;
+    border-radius: 15px;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Sombra para el badge */
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.arrow:disabled {
+.calendario td.selected:hover .routine-label {
+    background: #21c087;
+    color: #fff;
+}
+
+/* Otros ajustes para la tabla */
+.calendario th, .calendario td {
+    height: 50px; /* Ajuste del tamaño de las celdas */
+    vertical-align: middle; /* Centrar el contenido verticalmente */
+}
+
+.calendario td {
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Estilo de los días inactivos */
+.calendario td.inactive {
+    background: #3a4750;
     color: #888;
-    cursor: not-allowed;
+    border-radius: 0; /* Sin bordes redondeados */
+    box-shadow: none; /* Sin sombra */
 }
-
-/* Otros estilos existentes */
