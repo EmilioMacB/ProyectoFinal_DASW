@@ -35,25 +35,57 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         ejercicios.forEach((ejercicio) => {
-            const card = `
-                <div class="col-md-6">
-                    <div class="card mb-3 shadow">
-                        <div class="row g-0">
-                            <div class="col-md-4">
-                                <img src="${ejercicio.img}" class="img-fluid rounded-start" alt="${ejercicio.nombre}">
-                            </div>
-                            <div class="col-md-8">
-                                <div class="card-body">
-                                    <h5 class="card-title">${ejercicio.nombre}</h5>
-                                    <p class="card-text">${ejercicio.repeticiones}</p>
-                                    <a href="${ejercicio.video}" target="_blank" class="btn btn-primary btn-sm">Ver Video</a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            resultados.innerHTML += card;
+            // Estructura exterior
+            const colDiv = document.createElement("div");
+            colDiv.className = "col-md-6";
+
+            const cardDiv = document.createElement("div");
+            cardDiv.className = "card mb-3 shadow";
+
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "row g-0";
+
+            // Columna imagen
+            const imgColDiv = document.createElement("div");
+            imgColDiv.className = "col-md-4";
+
+            const img = document.createElement("img");
+            img.className = "img-fluid rounded-start";
+            img.setAttribute("src", ejercicio.img);
+            img.setAttribute("alt", ejercicio.nombre);
+            imgColDiv.appendChild(img);
+
+            // Columna contenido
+            const contentColDiv = document.createElement("div");
+            contentColDiv.className = "col-md-8";
+
+            const cardBody = document.createElement("div");
+            cardBody.className = "card-body";
+
+            const title = document.createElement("h5");
+            title.className = "card-title";
+            title.textContent = ejercicio.nombre;
+
+            const reps = document.createElement("p");
+            reps.className = "card-text";
+            reps.textContent = ejercicio.repeticiones;
+
+            const link = document.createElement("a");
+            link.className = "btn btn-primary btn-sm";
+            link.setAttribute("href", ejercicio.video);
+            link.setAttribute("target", "_blank");
+            link.textContent = "Ver Video";
+
+            // Ensamblar
+            cardBody.appendChild(title);
+            cardBody.appendChild(reps);
+            cardBody.appendChild(link);
+            contentColDiv.appendChild(cardBody);
+            rowDiv.appendChild(imgColDiv);
+            rowDiv.appendChild(contentColDiv);
+            cardDiv.appendChild(rowDiv);
+            colDiv.appendChild(cardDiv);
+            resultados.appendChild(colDiv);
         });
     }
 

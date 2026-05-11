@@ -1,8 +1,9 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 const Exercise = require("./models/exercise.js");
 
 // Conectar a MongoDB
-mongoose.connect("mongodb+srv://admin:Chocolate20@cluster0.jljyt.mongodb.net/crud", {
+mongoose.connect(process.env.MONGODB_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
 })

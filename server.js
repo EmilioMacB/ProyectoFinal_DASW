@@ -1,22 +1,67 @@
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
+const rateLimit = require('express-rate-limit');
 const User = require("./models/user");
 const Exercise = require("./models/exercise");
 const app = express();
-const PORT = 3000; // Cambia el puerto si es necesario
+const PORT = process.env.PORT; // Cambia el puerto si es necesario
+
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutos
+  max: 100, // máximo 100 requests por IP
+  message: 'Too many requests, please try again later.'
+});
 
 // Middleware para analizar JSON
 app.use(express.json());
+// app.use(limiter); // Aplicar limitador a todas las rutas
 
 // Habilitar CORS para permitir solicitudes desde el frontend
 app.use(cors());
 
+// Servir archivos estáticos desde la carpeta views
+app.use(express.static('views'));
+
+// Rutas para servir páginas HTML
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/views/home.html');
+});
+
+app.get('/rutina', (req, res) => {
+    res.sendFile(__dirname + '/views/rutina.html');
+});
+
+app.get('/ejercicios', (req, res) => {
+    res.sendFile(__dirname + '/views/ejercicios.html');
+});
+
+app.get('/calendario', (req, res) => {
+    res.sendFile(__dirname + '/views/calendario.html');
+});
+
+// Middleware de autenticación JWT
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1]; // "Bearer <token>"
+    if (!token) return res.status(401).json({ message: "Token requerido." });
+
+    jwt.verify(token, JWT_SECRET, (err, decoded) => {
+        if (err) return res.status(403).json({ message: "Token inválido o expirado." });
+        req.userId = decoded.userId; // userId extraído del token firmado
+        next();
+    });
+}
+
 // Conectar a MongoDB
 mongoose
-    .connect("mongodb+srv://admin:Chocolate20@cluster0.jljyt.mongodb.net/crud")
-    .then(() => console.log("Conectado a MongoDB en la base de datos 'crud'"))
+    .connect(process.env.MONGODB_URI)
+    .then(() => console.log("Conectado a MongoDB en la base de datos 'Bfit'"))
     .catch((err) => console.error("Error al conectar a MongoDB:", err));
 
 // Ruta para registrar usuarios
@@ -54,10 +99,12 @@ app.post("/api/users/login", async (req, res) => {
             return res.status(401).json({ message: "Contraseña incorrecta." });
         }
 
+        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "2h" });
         res.status(200).json({
             message: "Inicio de sesión exitoso",
-            userId: user._id,
-            routine: user.Routine || null, // Devuelve la rutina guardada si existe
+            token,
+            userName: user.Name,
+            routine: user.Routine || null,
         });
     } catch (error) {
         console.error("Error al iniciar sesión:", error);
@@ -110,8 +157,9 @@ app.post("/api/users/generateRoutine", async (req, res) => {
 
 
 // Ruta para guardar la rutina en el perfil del usuario
-app.post("/api/users/saveRoutine", async (req, res) => {
-    const { userId, routine } = req.body;
+app.post("/api/users/saveRoutine", authenticateToken, async (req, res) => {
+    const userId = req.userId; // del token, nunca del body
+    const { routine } = req.body;
 
     try {
         const user = await User.findById(userId);

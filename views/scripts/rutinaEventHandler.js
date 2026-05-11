@@ -16,81 +16,11 @@ function updateProgress() {
     document.querySelector('.progress-bar').style.width = `${progressPercentage}%`;
 }
 
-// Registro de usuario
-document.getElementById("registerForm").addEventListener("submit", async function (event) {
-    event.preventDefault(); // Evitar recargar la página
-
-    const nombre = document.getElementById("nombre").value;
-    const apellido = document.getElementById("apellido").value;
-    const correo = document.getElementById("correo").value;
-    const contraseña = document.getElementById("contraseña").value;
-    const confContraseña = document.getElementById("confContraseña").value;
-
-    if (contraseña !== confContraseña) {
-        alert("Las contraseñas no coinciden");
-        return;
-    }
-
-    const usuario = { Name: nombre, Email: correo, Password: contraseña };
-
-    try {
-        const response = await fetch("http://localhost:3000/api/users/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(usuario),
-        });
-
-        const data = await response.json();
-        if (response.ok) {
-            alert("Usuario registrado con éxito");
-            this.reset(); // Reiniciar el formulario
-        } else {
-            alert(`Error: ${data.message}`);
-        }
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Hubo un error al registrar el usuario");
-    }
-});
-
-// Inicio de sesión
-document.getElementById("loginForm").addEventListener("submit", async function (event) {
-    event.preventDefault();
-
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-
-    try {
-        const response = await fetch("http://localhost:3000/api/users/login", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ Email: email, Password: password }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            alert("Inicio de sesión exitoso");
-
-            if (data.routine) {
-                mostrarRutina(data.routine); // Mostrar rutina del backend
-            } else {
-                console.log("No se encontró rutina guardada para este usuario.");
-            }
-        } else {
-            alert(`Error: ${data.message}`);
-        }
-    } catch (error) {
-        console.error("Error al iniciar sesión:", error);
-        alert("Hubo un problema al iniciar sesión");
-    }
-});
-
 document.addEventListener("DOMContentLoaded", function () {
     const rutina = JSON.parse(localStorage.getItem("rutina"));
 
     if (!rutina) {
-        alert("No se encontró una rutina. Completa el cuestionario primero.");
+        showToast("No se encontró una rutina. Completa el cuestionario primero.", "error");
         return;
     }
 
@@ -105,23 +35,56 @@ function mostrarRutina(rutina) {
     rutina.forEach((dia) => {
         const rutinaItem = document.createElement("div");
         rutinaItem.classList.add("col-md-6", "mb-4");
-        rutinaItem.innerHTML = `
-            <div class="card rutina-card">
-                <h5 class="card-title text-center text-uppercase my-3">${dia.day}</h5>
-                <div class="rutina-body">
-                    ${dia.exercises.map(ex => `
-                        <div class="exercise-item d-flex align-items-center">
-                            <img src="${ex.img}" alt="${ex.name}" class="exercise-img me-3">
-                            <div>
-                                <p class="exercise-title mb-1"><strong>${ex.name}</strong></p>
-                                <p class="exercise-reps mb-1">${ex.reps}</p>
-                                <a href="${ex.video}" target="_blank" class="btn btn-link text-decoration-none">Ver Tutorial</a>
-                            </div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
+
+        const card = document.createElement("div");
+        card.className = "card rutina-card";
+
+        const cardTitle = document.createElement("h5");
+        cardTitle.className = "card-title text-center text-uppercase my-3";
+        cardTitle.textContent = dia.day;
+
+        const rutinaBody = document.createElement("div");
+        rutinaBody.className = "rutina-body";
+
+        dia.exercises.forEach((ex) => {
+            const exerciseItem = document.createElement("div");
+            exerciseItem.className = "exercise-item d-flex align-items-center";
+
+            const img = document.createElement("img");
+            img.className = "exercise-img me-3";
+            img.setAttribute("src", ex.img);
+            img.setAttribute("alt", ex.name);
+
+            const infoDiv = document.createElement("div");
+
+            const nameP = document.createElement("p");
+            nameP.className = "exercise-title mb-1";
+            const strong = document.createElement("strong");
+            strong.textContent = ex.name;
+            nameP.appendChild(strong);
+
+            const repsP = document.createElement("p");
+            repsP.className = "exercise-reps mb-1";
+            repsP.textContent = ex.reps;
+
+            const videoLink = document.createElement("a");
+            videoLink.className = "btn btn-link text-decoration-none";
+            videoLink.setAttribute("href", ex.video);
+            videoLink.setAttribute("target", "_blank");
+            videoLink.textContent = "Ver Tutorial";
+
+            infoDiv.appendChild(nameP);
+            infoDiv.appendChild(repsP);
+            infoDiv.appendChild(videoLink);
+
+            exerciseItem.appendChild(img);
+            exerciseItem.appendChild(infoDiv);
+            rutinaBody.appendChild(exerciseItem);
+        });
+
+        card.appendChild(cardTitle);
+        card.appendChild(rutinaBody);
+        rutinaItem.appendChild(card);
         rutinaContainer.appendChild(rutinaItem);
     });
 }
