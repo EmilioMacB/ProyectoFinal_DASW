@@ -96,7 +96,7 @@ app.post("/api/users/login", async (req, res) => {
 
         const isPasswordValid = await bcrypt.compare(Password, user.Password);
         if (!isPasswordValid) {
-            return res.status(401).json({ message: "Contraseña incorrecta." });
+            return res.status(401).json({ message: "Correo o contraseña incorrecta." });
         }
 
         const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "2h" });
@@ -104,7 +104,7 @@ app.post("/api/users/login", async (req, res) => {
             message: "Inicio de sesión exitoso",
             token,
             userName: user.Name,
-            routine: user.Routine || null,
+            routines: user.Routines || [],
         });
     } catch (error) {
         console.error("Error al iniciar sesión:", error);
@@ -167,13 +167,42 @@ app.post("/api/users/saveRoutine", authenticateToken, async (req, res) => {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
-        user.Routine = routine;
+        const newRoutine = {
+            name: `Rutina ${user.Routines.length + 1}`,
+            days: routine,
+            createdAt: new Date(),
+        };
+
+        user.Routines.push(newRoutine);
         await user.save();
 
-        res.status(200).json({ message: "Rutina guardada exitosamente" });
+        res.status(200).json({
+            message: "Rutina guardada exitosamente",
+            routine: newRoutine,
+        });
     } catch (error) {
         console.error("Error al guardar la rutina:", error);
         res.status(500).json({ message: "Error al guardar la rutina", error });
+    }
+});
+
+// Ruta para obtener todas las rutinas del usuario
+app.get("/api/users/routines", authenticateToken, async (req, res) => {
+    const userId = req.userId;
+
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "Usuario no encontrado" });
+        }
+
+        res.status(200).json({
+            message: "Rutinas obtenidas exitosamente",
+            routines: user.Routines || [],
+        });
+    } catch (error) {
+        console.error("Error al obtener rutinas:", error);
+        res.status(500).json({ message: "Error al obtener rutinas", error });
     }
 });
 

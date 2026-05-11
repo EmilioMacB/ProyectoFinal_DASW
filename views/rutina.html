@@ -54,26 +54,54 @@
         </header>
         <main>
             <div class="container mt-5">
-                <h1 style="color: whitesmoke; margin-bottom: 50px;">Tu rutina de hoy</h1>
-                <div class="row">
-                    <!-- Contenedor dinámico para la rutina -->
-                    <div id="rutinaContainer" class="col-md-8"></div>
-        
-                    <!-- Contenedor para el progreso -->
-                    <div class="col-md-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title">Progreso de ejercicios</h5>
-                                <ul id="progressList" class="list-group"></ul>
-                                <div class="progress mt-3">
-                                    <div class="progress-bar" style="width: 0%;" id="progressBar"></div>
+                <div id="emptyStateContainer" style="display: none;">
+                    <div class="text-center" style="margin-top: 100px;">
+                        <i class="fa-solid fa-dumbbell" style="font-size: 3rem; color: #888; margin-bottom: 20px;"></i>
+                        <h2 style="color: whitesmoke;">No hay rutina para mostrar</h2>
+                        <p style="color: #aaa; margin-bottom: 30px;">Contesta el cuestionario para generar tu primera rutina personalizada</p>
+                        <a href="/" class="btn btn-primary">Ir al inicio</a>
+                    </div>
+                </div>
+
+                <div id="routineContent" style="display: none;">
+                    <h1 style="color: whitesmoke; margin-bottom: 50px;">Tu rutina de hoy</h1>
+                    <div class="row">
+                        <!-- Contenedor dinámico para la rutina -->
+                        <div id="rutinaContainer" class="col-md-8"></div>
+
+                        <!-- Contenedor para el progreso -->
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Progreso de ejercicios</h5>
+                                    <ul id="progressList" class="list-group"></ul>
+                                    <div class="progress mt-3">
+                                        <div class="progress-bar" style="width: 0%;" id="progressBar"></div>
+                                    </div>
                                 </div>
                             </div>
+                            <button id="saveRoutineBtn" class="btn save-routine-btn w-100 mt-2">Guardar Rutina</button>
+                            <button id="viewRoutinesBtn" class="btn btn-outline-secondary w-100 mt-2" style="display: none;">Ver más rutinas</button>
                         </div>
                     </div>
                 </div>
             </div>
         </main>
+
+        <!-- Modal Ver Rutinas Guardadas -->
+        <div class="modal fade" id="routinesModal" tabindex="-1" role="dialog" aria-labelledby="routinesModalTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content modal-dark">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="routinesModalTitle">Mis rutinas guardadas</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="routinesList" class="routines-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         
         <footer>
             <!-- place footer here -->
@@ -93,6 +121,6 @@
 
         <script src="scripts/toastUtils.js"></script>
         <script src="scripts/rutinaEventHandler.js"></script>
-        <script src="scripts/authModal.js"></script>
+        <script src="scripts/authModalHandler.js"></script>
     </body>
 </html>

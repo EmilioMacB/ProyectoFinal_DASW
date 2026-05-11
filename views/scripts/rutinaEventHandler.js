@@ -1,36 +1,107 @@
-document.querySelectorAll('.btn-primary').forEach(button => {
-    button.addEventListener('click', function () {
-        let parentListItem = this.closest('.card-body');
-        if (parentListItem) {
-            this.textContent = 'Terminado';
-            this.classList.add('completed'); // Añadir clase 'completed'
-            updateProgress(); // Actualizar progreso
-        }
-    });
+// ============================================
+// ESTADO GLOBAL
+// ============================================
+const state = {
+    currentRoutine: null,
+    savedRoutines: [],
+    isLogged: false,
+    isSavedRoutine: false,
+    currentSavedRoutineIndex: null,
+};
+
+const API_URL = "http://localhost:3000";
+
+// ============================================
+// INICIALIZACIÓN
+// ============================================
+document.addEventListener("DOMContentLoaded", async function () {
+    updateAuthState();
+    await initializeRoutineDisplay();
+    setupEventListeners();
 });
 
-function updateProgress() {
-    const totalActivities = document.querySelectorAll('.card').length;
-    const completedActivities = document.querySelectorAll('button.completed').length;
-    const progressPercentage = (completedActivities / totalActivities) * 100;
-    document.querySelector('.progress-bar').style.width = `${progressPercentage}%`;
+async function initializeRoutineDisplay() {
+    const temporaryRoutine = JSON.parse(localStorage.getItem("rutina"));
+
+    if (state.isLogged) {
+        await loadSavedRoutines();
+
+        // Prioridad 1: rutina temporal en localStorage
+        if (temporaryRoutine) {
+            state.currentRoutine = temporaryRoutine;
+            state.isSavedRoutine = false;
+        }
+        // Prioridad 2: última rutina guardada
+        else if (state.savedRoutines.length > 0) {
+            const lastRoutine = state.savedRoutines[state.savedRoutines.length - 1];
+            state.currentRoutine = lastRoutine.days;
+            state.isSavedRoutine = true;
+            state.currentSavedRoutineIndex = state.savedRoutines.length - 1;
+        }
+    } else {
+        // Usuario no logueado: mostrar solo rutina temporal si existe
+        if (temporaryRoutine) {
+            state.currentRoutine = temporaryRoutine;
+        }
+    }
+
+    renderRoutine();
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    const rutina = JSON.parse(localStorage.getItem("rutina"));
+function updateAuthState() {
+    state.isLogged = localStorage.getItem("isLogged") === "true";
+}
 
-    if (!rutina) {
-        showToast("No se encontró una rutina. Completa el cuestionario primero.", "error");
+function setupEventListeners() {
+    const saveBtn = document.getElementById("saveRoutineBtn");
+    const viewMoreBtn = document.getElementById("viewRoutinesBtn");
+
+    if (saveBtn) {
+        saveBtn.addEventListener("click", handleSaveRoutine);
+    }
+
+    if (viewMoreBtn) {
+        viewMoreBtn.addEventListener("click", () => {
+            const modal = new bootstrap.Modal(document.getElementById("routinesModal"));
+            modal.show();
+        });
+    }
+}
+
+// ============================================
+// RENDERIZACIÓN PRINCIPAL
+// ============================================
+function renderRoutine() {
+    const emptyState = document.getElementById("emptyStateContainer");
+    const routineContent = document.getElementById("routineContent");
+
+    if (!state.currentRoutine) {
+        emptyState.style.display = "block";
+        routineContent.style.display = "none";
         return;
     }
 
-    mostrarRutina(rutina);
-    updateProgress(rutina);
-});
+    emptyState.style.display = "none";
+    routineContent.style.display = "block";
 
+    mostrarRutina(state.currentRoutine);
+    updateProgress(state.currentRoutine);
+    updateViewMoreButton();
+}
+
+function updateViewMoreButton() {
+    const viewMoreBtn = document.getElementById("viewRoutinesBtn");
+    if (viewMoreBtn) {
+        viewMoreBtn.style.display = state.isLogged && state.savedRoutines.length > 0 ? "block" : "none";
+    }
+}
+
+// ============================================
+// MOSTRAR RUTINA (original)
+// ============================================
 function mostrarRutina(rutina) {
     const rutinaContainer = document.getElementById("rutinaContainer");
-    rutinaContainer.innerHTML = ""; // Limpiar contenedor dinámico
+    rutinaContainer.innerHTML = "";
 
     rutina.forEach((dia) => {
         const rutinaItem = document.createElement("div");
@@ -89,6 +160,9 @@ function mostrarRutina(rutina) {
     });
 }
 
+// ============================================
+// PROGRESO (original)
+// ============================================
 function updateProgress(rutina) {
     const progressList = document.getElementById("progressList");
     const progressBar = document.getElementById("progressBar");
@@ -118,9 +192,230 @@ function updateProgress(rutina) {
                     completedCount--;
                 }
 
-                const progressPercentage = (completedCount / rutina.length) * 100;
+                const totalExercises = rutina.reduce((acc, d) => acc + d.exercises.length, 0);
+                const progressPercentage = (completedCount / totalExercises) * 100;
                 progressBar.style.width = `${progressPercentage}%`;
             });
         });
     });
+}
+
+// ============================================
+// GUARDAR RUTINA
+// ============================================
+async function handleSaveRoutine() {
+    if (!state.currentRoutine) {
+        showToast("No hay rutina para guardar", "error");
+        return;
+    }
+
+    if (!state.isLogged) {
+        routineToSave = state.currentRoutine;
+        const loginModal = new bootstrap.Modal(document.getElementById("loginModal"));
+        loginModal.show();
+    } else {
+        await saveRoutineToDatabase(state.currentRoutine);
+    }
+}
+
+async function saveRoutineToDatabase(routine) {
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await fetch(`${API_URL}/api/users/saveRoutine`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ routine: routine }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Limpiar rutina temporal de localStorage
+            localStorage.removeItem("rutina");
+
+            // Recargar rutinas guardadas
+            await loadSavedRoutines();
+
+            // Mostrar última rutina guardada
+            if (state.savedRoutines.length > 0) {
+                const lastRoutine = state.savedRoutines[state.savedRoutines.length - 1];
+                state.currentRoutine = lastRoutine.days;
+                state.isSavedRoutine = true;
+                state.currentSavedRoutineIndex = state.savedRoutines.length - 1;
+            }
+
+            renderRoutine();
+            showToast("Rutina guardada exitosamente", "success");
+        } else {
+            showToast(`Error: ${data.message}`, "error");
+        }
+    } catch (error) {
+        console.error("Error al guardar rutina:", error);
+        showToast("Hubo un error al guardar la rutina", "error");
+    }
+}
+
+// ============================================
+// CARGAR Y MOSTRAR RUTINAS GUARDADAS
+// ============================================
+async function loadSavedRoutines() {
+    const token = localStorage.getItem("token");
+
+    try {
+        const response = await fetch(`${API_URL}/api/users/routines`, {
+            headers: { "Authorization": `Bearer ${token}` },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            state.savedRoutines = data.routines || [];
+        }
+    } catch (error) {
+        console.error("Error cargando rutinas guardadas:", error);
+    }
+}
+
+function displaySavedRoutinesModal() {
+    const listContainer = document.getElementById("routinesList");
+    listContainer.innerHTML = "";
+
+    if (state.savedRoutines.length === 0) {
+        listContainer.innerHTML = `
+            <div class="text-center py-4">
+                <p style="color: #b0b0cc;">No hay rutinas guardadas</p>
+            </div>
+        `;
+        return;
+    }
+
+    state.savedRoutines.forEach((routine, index) => {
+        const createdDate = new Date(routine.createdAt);
+        const formattedDate = createdDate.toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "short",
+            day: "numeric",
+        });
+
+        const isActive = state.currentSavedRoutineIndex === index && state.isSavedRoutine;
+        const totalExercises = routine.days.reduce((acc, day) => acc + day.exercises.length, 0);
+
+        const item = document.createElement("div");
+        item.className = `routine-item ${isActive ? "active" : ""}`;
+
+        // Info section
+        const infoDiv = document.createElement("div");
+        infoDiv.className = "routine-item-info";
+
+        const nameDiv = document.createElement("div");
+        nameDiv.className = "routine-item-name";
+        nameDiv.textContent = routine.name;
+
+        const detailsDiv = document.createElement("div");
+        detailsDiv.className = "routine-item-details";
+
+        // Date detail
+        const dateDetail = document.createElement("div");
+        dateDetail.className = "routine-item-detail";
+        const dateIcon = document.createElement("i");
+        dateIcon.className = "fa-solid fa-calendar routine-item-icon";
+        const dateSpan = document.createElement("span");
+        dateSpan.textContent = formattedDate;
+        dateDetail.appendChild(dateIcon);
+        dateDetail.appendChild(dateSpan);
+
+        // Days detail
+        const daysDetail = document.createElement("div");
+        daysDetail.className = "routine-item-detail";
+        const daysIcon = document.createElement("i");
+        daysIcon.className = "fa-solid fa-layer-group routine-item-icon";
+        const daysSpan = document.createElement("span");
+        daysSpan.textContent = `${routine.days.length} días`;
+        daysDetail.appendChild(daysIcon);
+        daysDetail.appendChild(daysSpan);
+
+        // Exercises detail
+        const exDetail = document.createElement("div");
+        exDetail.className = "routine-item-detail";
+        const exIcon = document.createElement("i");
+        exIcon.className = "fa-solid fa-dumbbell routine-item-icon";
+        const exSpan = document.createElement("span");
+        exSpan.textContent = `${totalExercises} ejercicios`;
+        exDetail.appendChild(exIcon);
+        exDetail.appendChild(exSpan);
+
+        detailsDiv.appendChild(dateDetail);
+        detailsDiv.appendChild(daysDetail);
+        detailsDiv.appendChild(exDetail);
+
+        infoDiv.appendChild(nameDiv);
+        infoDiv.appendChild(detailsDiv);
+
+        // Button
+        const button = document.createElement("button");
+        button.className = "routine-item-select";
+        button.textContent = isActive ? "Viendo" : "Ver";
+        button.addEventListener("click", () => selectRoutineFromModal(index));
+
+        item.appendChild(infoDiv);
+        item.appendChild(button);
+        listContainer.appendChild(item);
+    });
+}
+
+function selectRoutineFromModal(index) {
+    const routine = state.savedRoutines[index];
+    if (!routine) return;
+
+    state.currentRoutine = routine.days;
+    state.isSavedRoutine = true;
+    state.currentSavedRoutineIndex = index;
+
+    renderRoutine();
+    displaySavedRoutinesModal(); // Actualizar modal para mostrar el nuevo estado
+
+    showToast(`Mostrando ${routine.name}`, "success");
+}
+
+// ============================================
+// EVENTO: CUANDO SE ABRE EL MODAL
+// ============================================
+document.addEventListener("DOMContentLoaded", function () {
+    const routinesModal = document.getElementById("routinesModal");
+    if (routinesModal) {
+        routinesModal.addEventListener("show.bs.modal", function () {
+            displaySavedRoutinesModal();
+        });
+    }
+});
+
+// ============================================
+// RECARGAR AL ACTUALIZAR RUTINA (desde cuestionario)
+// ============================================
+window.addEventListener("storage", function (e) {
+    if (e.key === "rutina" && e.newValue) {
+        // Nueva rutina generada desde el cuestionario
+        state.currentRoutine = JSON.parse(e.newValue);
+        state.isSavedRoutine = false;
+        state.currentSavedRoutineIndex = null;
+        renderRoutine();
+        showToast("Nueva rutina generada", "info");
+    }
+
+    if (e.key === "isLogged") {
+        // Usuario se logueó/deslogueó desde otra tab
+        updateAuthState();
+        initializeRoutineDisplay();
+    }
+});
+
+// ============================================
+// INTEGRACIÓN CON LOGIN (authModal.js)
+// ============================================
+function onLoginSuccess() {
+    updateAuthState();
+    initializeRoutineDisplay();
 }

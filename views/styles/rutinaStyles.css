@@ -198,3 +198,259 @@ h1, h2, h3 {
     border-radius: 8px; /* Bordes suaves */
     transition: width 0.4s ease; /* Animación al cambiar el progreso */
 }
+
+/* Botón de guardar rutina */
+.save-routine-btn {
+    background: linear-gradient(135deg, #435dd8, #5a5aff);
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 14px 24px;
+    font-size: 1.1rem;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(67, 93, 216, 0.3);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.save-routine-btn:hover {
+    background: linear-gradient(135deg, #5a5aff, #7878ff);
+    box-shadow: 0 6px 20px rgba(67, 93, 216, 0.5);
+    transform: translateY(-2px);
+    color: #ffffff
+}
+
+.save-routine-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(67, 93, 216, 0.3);
+    color: #ffffff;
+}
+
+/* Modal Dark Mode */
+.modal-dark .modal-content {
+    background-color: #2a2e3b !important;
+    border: 1px solid #3a3a55 !important;
+}
+
+.modal-dark .modal-header {
+    border-bottom: 1px solid #3a3a55 !important;
+    background-color: #252830 !important;
+}
+
+.modal-dark .modal-title {
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.modal-dark .btn-close {
+    filter: invert(1) !important;
+}
+
+.modal-dark .modal-body {
+    background-color: #2a2e3b !important;
+    color: #e0e0f0;
+}
+
+.modal-dark .modal-footer {
+    background-color: #252830 !important;
+    border-top: 1px solid #3a3a55 !important;
+}
+
+/* Form controls en modales dark */
+.modal-dark .form-control {
+    background-color: #3a3a55 !important;
+    border: 1px solid #454570 !important;
+    color: #ffffff !important;
+}
+
+.modal-dark .form-control:focus {
+    background-color: #454570 !important;
+    border-color: #435dd8 !important;
+    color: #ffffff !important;
+    box-shadow: 0 0 0 0.2rem rgba(67, 93, 216, 0.25) !important;
+}
+
+.modal-dark .form-label {
+    color: #e0e0f0 !important;
+}
+
+.modal-dark .form-control::placeholder {
+    color: #888 !important;
+}
+
+/* Input group en modales dark */
+.modal-dark .input-group-text {
+    background-color: #3a3a55 !important;
+    border: 1px solid #454570 !important;
+    color: #888 !important;
+}
+
+/* Links en modales dark */
+.modal-dark a {
+    color: #435dd8 !important;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.modal-dark a:hover {
+    color: #5a5aff !important;
+    text-decoration: underline;
+}
+
+/* Routines List */
+.routines-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.routine-item {
+    padding: 16px;
+    background-color: #3a3a55;
+    border: 2px solid transparent;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.routine-item:hover {
+    background-color: #454570;
+    border-color: #435dd8;
+    transform: translateX(4px);
+}
+
+.routine-item.active {
+    background-color: #435dd8;
+    border-color: #5a5aff;
+}
+
+.routine-item-info {
+    flex: 1;
+}
+
+.routine-item-name {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 6px;
+}
+
+.routine-item-details {
+    color: #b0b0cc;
+    font-size: 0.9rem;
+    display: flex;
+    gap: 12px;
+}
+
+.routine-item-detail {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.routine-item-icon {
+    color: #435dd8;
+    font-size: 0.85rem;
+}
+
+.routine-item-select {
+    padding: 8px 16px;
+    background-color: #435dd8;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.routine-item-select:hover {
+    background-color: #5a5aff;
+    transform: scale(1.05);
+}
+
+.routine-item.active .routine-item-select {
+    background-color: #ffffff;
+    color: #435dd8;
+}
+
+/* Routine Status Container */
+#routineStatusContainer {
+    padding: 12px 16px;
+    background-color: #3a3a55;
+    border-left: 4px solid #435dd8;
+    border-radius: 8px;
+    color: #e0e0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.routine-status-info {
+    flex: 1;
+}
+
+.routine-status-label {
+    font-size: 0.85rem;
+    color: #b0b0cc;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.routine-status-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.routine-status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background-color: #2a2a40;
+    color: #ffa500;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.routine-status-badge.saved {
+    background-color: #2d4c2d;
+    color: #7fff7f;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .rutina-card {
+        width: 100%;
+        padding: 15px;
+    }
+
+    .exercise-img {
+        width: 150px;
+        height: 150px;
+    }
+
+    #routineStatusContainer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .routine-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .routine-item-select {
+        width: 100%;
+    }
+}
