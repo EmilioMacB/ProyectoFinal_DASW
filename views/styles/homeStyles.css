@@ -3,24 +3,17 @@
 
 /* Aplicar Playfair Display solo a los títulos */
 h1, h2, h3 {
-    font-family: 'Playfair Display', serif;
+  font-family: "Oswald", sans-serif;
+}
+
+h1{
+  font-size: 3.5rem;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* Agregar estilos al contenedor del texto */
-.banner {
-  background-image: url('https://wallpapergod.com/images/hd/fitness-5440X3310-wallpaper-mzr933w8toyh722h.jpeg'); /* Ruta de tu imagen */
-  background-size: cover; /* La imagen cubrirá todo el área */
-  background-position: center; /* Centra la imagen */
-  background-repeat: no-repeat; /* Evita que se repita */
-  color: whitesmoke; /* Color del texto */
-  text-align: center; /* Centra el texto */
-  height: 800px; /* Altura del contenedor */
-  display: flex; /* Centrado vertical y horizontal */
-  align-items: center; /* Centrado vertical */
-  justify-content: center; /* Centrado horizontal */
-  font-size: 3rem; /* Tamaño del texto */
-  font-family: 'Roboto', sans-serif; /* Cambiar fuente si lo deseas */
-}
+
 
 /* Contenedor principal del banner */
 .banner {
@@ -30,14 +23,14 @@ h1, h2, h3 {
   background-repeat: no-repeat; /* Evita que se repita */
   color: whitesmoke; /* Color del texto */
   text-align: center; /* Centra el texto */
-  height: 800px; /* Altura del contenedor */
+  height: calc(100vh - 56px); /* Altura del contenedor */
   display: flex; /* Centrado vertical y horizontal */
   flex-direction: column; /* Apilar los elementos verticalmente */
   align-items: center; /* Centrado horizontal */
   justify-content: flex-start; /* Comienza desde arriba */
   padding-top: 150px; /* Ajusta este valor para mover más abajo */
   font-size: 3rem; /* Tamaño del texto */
-  font-family: 'Playfair Display', serif; /* Cambiar fuente a elegante */
+  font-family: "Inter", sans-serif;
 }
 
 /* Estilos para el botón */
@@ -54,7 +47,7 @@ h1, h2, h3 {
   transition: 0.5s; /* Animación de transición */
   transition-property: box-shadow, background-color; /* Propiedades animadas */
   background: #8a2be2; /* Color principal del botón (morado elegante) */
-  font-family: 'Playfair Display', serif; /* Fuente elegante */
+  font-family: "Inter", sans-serif;
 }
 
 /* Efecto hover para el botón */
@@ -178,7 +171,7 @@ button {
   display: flex;
   align-items: center;
   font-size: 15px;
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 button:hover {

@@ -1,4 +1,4 @@
-alert("¡Si no lo has hecho, crea una cuenta para guardar tu rutina!");
+showToast("¡Si no lo has hecho, crea una cuenta para guardar tu rutina!", "info");
 
 const preguntas = [
     {
@@ -48,7 +48,7 @@ const respuestas = {}; // Objeto para almacenar las respuestas del cuestionario
 // Función para actualizar el modal con la pregunta actual
 function actualizarModal(pregunta) {
     const modalTitle = document.getElementById('cuestionarioModalLabel');
-    const modalBody = document.querySelector('.modal-body');
+    const modalBody = document.querySelector('#cuestionarioModal .modal-body');
 
     // Cambiar el título del modal
     modalTitle.textContent = pregunta.titulo;
@@ -96,7 +96,7 @@ function handleNextQuestion() {
     // Verificar si se seleccionó una opción
     const opcionSeleccionada = document.querySelector('input[name="value-radio"]:checked');
     if (!opcionSeleccionada) {
-        alert("Selecciona una opción antes de continuar");
+        showToast("Selecciona una opción antes de continuar", "error");
         return; // No avanzar si no se seleccionó una opción
     }
 
@@ -130,15 +130,17 @@ async function enviarRespuestas() {
         const data = await response.json();
 
         if (response.ok) {
-            alert("Rutina generada exitosamente");
-            localStorage.setItem("rutina", JSON.stringify(data.routine)); // Guardar rutina en localStorage
-            window.location.href = "rutina.html"; // Redirigir a la página de la rutina
+            showToast("Rutina generada exitosamente", "success");
+            localStorage.setItem("rutina", JSON.stringify(data.routine));
+            setTimeout(() => {
+                window.location.href = "/rutina";
+            }, 1500);
         } else {
-            alert(`Error: ${data.message}`);
+            showToast(`Error: ${data.message}`, "error");
         }
     } catch (error) {
         console.error("Error al enviar respuestas:", error);
-        alert("Hubo un problema al generar la rutina");
+        showToast("Hubo un problema al generar la rutina", "error");
     }
 }
 

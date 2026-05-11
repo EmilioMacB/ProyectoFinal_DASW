@@ -8,6 +8,11 @@
             name="viewport"
             content="width=device-width, initial-scale=1, shrink-to-fit=no"
         />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
+        <!-- FONT AWESOME LINK para poder usar los iconos -->
+        <script src="https://kit.fontawesome.com/c88f2a7fc4.js" crossorigin="anonymous"></script>
 
         <!-- Bootstrap CSS v5.2.1 -->
         <link
@@ -19,34 +24,35 @@
 
         <link rel="stylesheet" href="styles/homeStyles.css">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
-
-
-        
     </head>
 
     <body style="background-color: #27292b;">
         <header>
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container-fluid">
-                  <!-- Logo y botón para pantallas pequeñas -->
-                  <a class="navbar-brand" href="#">
-                    <img src="https://icons.iconarchive.com/icons/icons8/ios7/512/Sports-Dumbbell-icon.png" alt="Logo" width="40" height="40">
-                  </a>
+                  <a class="navbar-brand" href="/"><i class="fa-solid fa-dumbbell"></i> B-FIT</a>
                   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                   </button>
-                  
-                  <!-- Elementos de la barra de navegación -->
+
                   <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
+                    <ul class="navbar-nav ms-auto">
+                      <li class="nav-item nav-exercises" style="display:none;">
+                        <a class="nav-link" href="/ejercicios">Todos los ejercicios</a>
+                      </li>
+                      <li class="nav-item nav-calendar" style="display:none;">
+                        <a class="nav-link" href="/calendario">Calendario / Progreso</a>
+                      </li>
+                      <li class="nav-item nav-my-routines" style="display:none;">
+                        <a class="nav-link" href="/rutina">Mis rutinas</a>
+                      </li>
                       <li class="nav-item">
-                        <a class="nav-link active" style="color: whitesmoke" aria-current="page" href="#">B-FIT</a>
+                        <div id="authButtonsContainer" class="d-flex gap-2"></div>
                       </li>
                     </ul>
                   </div>
                 </div>
               </nav>
-            
         </header>
         <main>
           <div class="d-flex justify-content-center align-items-center banner" style="color: whitesmoke; ">
@@ -147,7 +153,9 @@
             crossorigin="anonymous"
         ></script>
 
+        <script src="scripts/toastUtils.js"></script>
         <script src="scripts/HomeEventHandler.js"></script>
+        <script src="scripts/authModal.js"></script>
 
     </body>
 </html>
