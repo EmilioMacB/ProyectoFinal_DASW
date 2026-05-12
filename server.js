@@ -11,6 +11,20 @@ const Exercise = require("./models/exercise");
 const mongoSanitize = require('express-mongo-sanitize'); // librería para prevenir inyecciones NoSQL
 const app = express();
 const PORT = process.env.PORT; // Cambia el puerto si es necesario
+const PRODUCTION_BASE_URL = new URL(process.env.APP_BASE_URL || "https://midominio.com");
+PRODUCTION_BASE_URL.protocol = "https:";
+PRODUCTION_BASE_URL.pathname = "/";
+PRODUCTION_BASE_URL.search = "";
+PRODUCTION_BASE_URL.hash = "";
+
+function buildHttpsRedirectUrl(req) {
+  const requestPath = req.originalUrl || req.url || "/";
+  const safePath = requestPath.startsWith("/") && !requestPath.startsWith("//") && !requestPath.includes("\\")
+    ? requestPath
+    : "/";
+
+  return new URL(safePath, PRODUCTION_BASE_URL.origin).toString();
+}
 
 // Ocultar el framework usado 
 app.disable("x-powered-by");
@@ -24,7 +38,11 @@ app.use(helmet({
       styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://ka-f.fontawesome.com"],
       imgSrc: ["'self'", "data:", "https://training.fit", "https://i.pinimg.com", "https://wallpapergod.com"],
-      connectSrc: ["'self'", "https://ka-f.fontawesome.com"]
+      connectSrc: ["'self'", "https://ka-f.fontawesome.com"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+      frameAncestors: ["'self'"],
+      objectSrc: ["'none'"]
     },
   },
   hsts: {
@@ -33,6 +51,15 @@ app.use(helmet({
     preload: true
   }
 }));
+
+// Cross-Origin-Embedder-Policy header (debe ser middleware separado en Helmet 8.x)
+app.use(helmet.crossOriginEmbedderPolicy({ policy: "unsafe-none" }));
+
+// Permissions-Policy header para restringir acceso a APIs de hardware
+app.use((req, res, next) => {
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()');
+  next();
+});
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -71,7 +98,7 @@ const globalLimiter = rateLimit({
 
 // CORS Estricto
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' ? 'https://midominio.com' : 'http://localhost:3000',
+  origin: process.env.NODE_ENV === 'production' ? PRODUCTION_BASE_URL.origin : 'http://localhost:3000',
   methods: ['GET', 'POST'], // Solo permitimos los métodos que tu API realmente usa
   allowedHeaders: ['Content-Type', 'Authorization'] // Solo permitimos estos headers
 };
@@ -81,7 +108,7 @@ app.use(cors(corsOptions));
 if (process.env.NODE_ENV === 'production') {
     app.use((req, res, next) => {
       if (req.header('x-forwarded-proto') !== 'https') {
-        res.redirect(`https://${req.header('host')}${req.url}`);
+        res.redirect(301, buildHttpsRedirectUrl(req));
       } else {
         next();
       }
