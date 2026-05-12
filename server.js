@@ -1,29 +1,92 @@
 require("dotenv").config();
+const helmet = require("helmet"); // libreria para agregar Content Security Policy
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const rateLimit = require('express-rate-limit');
+const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const User = require("./models/user");
 const Exercise = require("./models/exercise");
+const mongoSanitize = require('express-mongo-sanitize'); // librería para prevenir inyecciones NoSQL
 const app = express();
 const PORT = process.env.PORT; // Cambia el puerto si es necesario
 
+// Ocultar el framework usado 
+app.disable("x-powered-by");
+
+// Cabeceras de seguridad con Helmet (incluye HSTS y CSP)
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "https://kit.fontawesome.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://ka-f.fontawesome.com"],
+      imgSrc: ["'self'", "data:", "https://training.fit", "https://i.pinimg.com", "https://wallpapergod.com"],
+      connectSrc: ["'self'", "https://ka-f.fontawesome.com"]
+    },
+  },
+  hsts: {
+    maxAge: 31536000, // 1 año en segundos
+    includeSubDomains: true,
+    preload: true
+  }
+}));
+
 const JWT_SECRET = process.env.JWT_SECRET;
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 100, // máximo 100 requests por IP
-  message: 'Too many requests, please try again later.'
+
+
+// Rate Limiting para usuarios autenticados (Por userId)
+const authenticatedLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 50, // Límite de 50 peticiones por usuario en este lapso
+    keyGenerator: (req) => ipKeyGenerator(req.ip || req.userId), // Identificamos al usuario por su ID (extraído del JWT) o por su IP si no hay ID
+    message: { message: "Has superado el límite de acciones para tu cuenta. Intenta más tarde." }
 });
 
-// Middleware para analizar JSON
-app.use(express.json());
-// app.use(limiter); // Aplicar limitador a todas las rutas
+// Middleware para analizar JSON con límite de tamaño (Prevención de DoS por payloads gigantes)
+app.use(express.json({ limit: '10kb' }));
 
-// Habilitar CORS para permitir solicitudes desde el frontend
-app.use(cors());
+// Sanitización de datos contra inyecciones NoSQL
+app.use(mongoSanitize());
+
+
+// Rate Limiting Global (Por IP)
+const globalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 100, // Límite de 100 peticiones por IP cada 15 min
+    message: { message: "Demasiadas peticiones desde esta IP, por favor intenta más tarde." }
+  });
+  app.use(globalLimiter);
+  
+  // Rate Limiting Específico para Login (Prevención de fuerza bruta)
+  const loginLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutos
+    max: 5, // Solo 5 intentos de login fallidos por IP
+    message: { message: "Demasiados intentos de inicio de sesión. Intenta en 15 minutos." }
+  });
+
+
+// CORS Estricto
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' ? 'https://midominio.com' : 'http://localhost:3000',
+  methods: ['GET', 'POST'], // Solo permitimos los métodos que tu API realmente usa
+  allowedHeaders: ['Content-Type', 'Authorization'] // Solo permitimos estos headers
+};
+app.use(cors(corsOptions));
+
+// Forzar HTTPS en Producción
+if (process.env.NODE_ENV === 'production') {
+    app.use((req, res, next) => {
+      if (req.header('x-forwarded-proto') !== 'https') {
+        res.redirect(`https://${req.header('host')}${req.url}`);
+      } else {
+        next();
+      }
+    });
+  }
 
 // Servir archivos estáticos desde la carpeta views
 app.use(express.static('views'));
@@ -85,7 +148,7 @@ app.post("/api/users/register", async (req, res) => {
 });
 
 // Ruta para iniciar sesión
-app.post("/api/users/login", async (req, res) => {
+app.post("/api/users/login", loginLimiter, async (req, res) => {
     const { Email, Password } = req.body;
 
     try {
@@ -157,7 +220,7 @@ app.post("/api/users/generateRoutine", async (req, res) => {
 
 
 // Ruta para guardar la rutina en el perfil del usuario
-app.post("/api/users/saveRoutine", authenticateToken, async (req, res) => {
+app.post("/api/users/saveRoutine", authenticateToken, authenticatedLimiter, async (req, res) => {
     const userId = req.userId; // del token, nunca del body
     const { routine } = req.body;
 
@@ -187,7 +250,7 @@ app.post("/api/users/saveRoutine", authenticateToken, async (req, res) => {
 });
 
 // Ruta para obtener todas las rutinas del usuario
-app.get("/api/users/routines", authenticateToken, async (req, res) => {
+app.get("/api/users/routines", authenticateToken, authenticatedLimiter, async (req, res) => {
     const userId = req.userId;
 
     try {
