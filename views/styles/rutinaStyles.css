@@ -1,8 +1,43 @@
+body {
+    background-color: #27292b;
+}
 
+.is-hidden {
+    display: none !important;
+}
 
 /* Aplicar Playfair Display solo a los títulos */
 h1, h2, h3 {
-    font-family: "Oswald", sans-serif;
+    font-family: Impact, "Arial Black", sans-serif;
+}
+
+.empty-state {
+    margin-top: 100px;
+}
+
+.empty-state h2 {
+    color: whitesmoke;
+}
+
+.empty-state p {
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.empty-state-icon {
+    color: #888;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+
+.routine-title {
+    color: whitesmoke;
+    margin-bottom: 50px;
+}
+
+.progress-0 {
+    width: 0%;
 }
 
 .card {
@@ -356,6 +391,11 @@ h1, h2, h3 {
 .routine-item-icon {
     color: #435dd8;
     font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.empty-routines-message {
+    color: #b0b0cc;
 }
 
 .routine-item-select {

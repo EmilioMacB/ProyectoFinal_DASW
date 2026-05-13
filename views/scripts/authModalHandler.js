@@ -1,87 +1,7 @@
 // Módulo de Estilos
 const AuthModalStyles = (() => {
     function injectDarkModeCSS() {
-        if (document.getElementById("modalDarkStyles")) return;
-
-        const darkModeCSS = `
-            <style id="modalDarkStyles">
-                .modal-dark .modal-content {
-                    background-color: #2a2e3b !important;
-                    border: 1px solid #3a3a55 !important;
-                }
-                .modal-dark .modal-header {
-                    border-bottom: 1px solid #3a3a55 !important;
-                    background-color: #252830 !important;
-                }
-                .modal-dark .modal-title {
-                    color: #ffffff !important;
-                    font-weight: 600;
-                }
-                .modal-dark .btn-close {
-                    filter: invert(1) !important;
-                }
-                .modal-dark .modal-body {
-                    background-color: #2a2e3b !important;
-                    color: #e0e0f0;
-                }
-                .modal-dark .modal-footer {
-                    background-color: #252830 !important;
-                    border-top: 1px solid #3a3a55 !important;
-                }
-                .modal-dark .form-control {
-                    background-color: #3a3a55 !important;
-                    border: 1px solid #454570 !important;
-                    color: #ffffff !important;
-                }
-                .modal-dark .form-control:focus {
-                    background-color: #454570 !important;
-                    border-color: #435dd8 !important;
-                    color: #ffffff !important;
-                    box-shadow: 0 0 0 0.2rem rgba(67, 93, 216, 0.25) !important;
-                }
-                .modal-dark input[type="text"],
-                .modal-dark input[type="email"],
-                .modal-dark input[type="password"] {
-                    background-color: #3a3a55 !important;
-                    border: 1px solid #454570 !important;
-                    color: #ffffff !important;
-                }
-                .modal-dark input[type="text"]:focus,
-                .modal-dark input[type="email"]:focus,
-                .modal-dark input[type="password"]:focus {
-                    background-color: #454570 !important;
-                    border-color: #435dd8 !important;
-                    color: #ffffff !important;
-                    box-shadow: 0 0 0 0.2rem rgba(67, 93, 216, 0.25) !important;
-                }
-                .modal-dark .form-label {
-                    color: #e0e0f0 !important;
-                }
-                .modal-dark .form-control::placeholder {
-                    color: #888 !important;
-                }
-                .modal-dark .input-group-text {
-                    background-color: #3a3a55 !important;
-                    border: 1px solid #454570 !important;
-                    color: #888 !important;
-                }
-                .modal-dark a {
-                    color: #435dd8 !important;
-                    text-decoration: none;
-                }
-                .modal-dark a:hover {
-                    color: #5a5aff !important;
-                    text-decoration: underline;
-                }
-                .modal-dark .modal-footer {
-                    color: #e0e0f0 !important;
-                }
-                .modal-dark .modal-footer div {
-                    color: #e0e0f0 !important;
-                }
-            </style>
-        `;
-        document.head.insertAdjacentHTML("beforeend", darkModeCSS);
+        return;
     }
 
     return { injectDarkModeCSS };
@@ -218,14 +138,14 @@ const AuthModals = (() => {
                                 <label for="email" class="form-label">Correo</label>
                                 <div class="input-group">
                                     <input type="email" class="form-control" id="email" name="email" placeholder="Ingresa tu correo" required />
-                                    <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                    <span class="input-group-text"><i class="fa-solid fa-user" aria-hidden="true"></i></span>
                                 </div>
                             </div>
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <div class="input-group">
                                     <input type="password" class="form-control" id="password" name="password" placeholder="Ingresa tu contraseña" required />
-                                    <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                    <span class="input-group-text"><i class="fa-solid fa-key" aria-hidden="true"></i></span>
                                 </div>
                             </div>
                             <div class="d-flex justify-content-center">
@@ -484,7 +404,7 @@ const UIManager = (() => {
             profileBtn.className = "btn btn-outline-light";
             profileBtn.setAttribute("data-bs-toggle", "modal");
             profileBtn.setAttribute("data-bs-target", "#perfilModal");
-            profileBtn.innerHTML = '<i class="fa-solid fa-user"></i>';
+            profileBtn.innerHTML = '<i class="fa-solid fa-user" aria-hidden="true"></i><span class="visually-hidden">Perfil</span>';
             profileBtn.addEventListener("click", loadUserProfile);
             authContainer.appendChild(profileBtn);
         } else {
@@ -515,7 +435,7 @@ const UIManager = (() => {
 
         [exercisesLinks, calendarLinks, routinesLinks].forEach(links => {
             links.forEach(link => {
-                link.style.display = state.isLogged ? "block" : "none";
+                link.classList.toggle("is-hidden", !state.isLogged);
             });
         });
     }

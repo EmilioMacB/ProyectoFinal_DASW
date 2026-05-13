@@ -1,0 +1,85 @@
+.is-hidden {
+  display: none !important;
+}
+
+.modal-dark .modal-content {
+  background-color: #2a2e3b;
+  border: 1px solid #3a3a55;
+  color: #e0e0f0;
+}
+
+.modal-dark .modal-header {
+  background-color: #252830;
+  border-bottom: 1px solid #3a3a55;
+}
+
+.modal-dark .modal-title {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.modal-dark .btn-close {
+  filter: invert(1);
+}
+
+.modal-dark .modal-body {
+  background-color: #2a2e3b;
+  color: #e0e0f0;
+}
+
+.modal-dark .modal-footer {
+  background-color: #252830;
+  border-top: 1px solid #3a3a55;
+  color: #e0e0f0;
+}
+
+.modal-dark .modal-footer div {
+  color: #e0e0f0;
+}
+
+.modal-dark .form-control,
+.modal-dark input[type="text"],
+.modal-dark input[type="email"],
+.modal-dark input[type="password"] {
+  background-color: #3a3a55;
+  border: 1px solid #454570;
+  color: #ffffff;
+}
+
+.modal-dark .form-control:focus,
+.modal-dark input[type="text"]:focus,
+.modal-dark input[type="email"]:focus,
+.modal-dark input[type="password"]:focus {
+  background-color: #454570;
+  border-color: #435dd8;
+  color: #ffffff;
+  box-shadow: 0 0 0 0.2rem rgba(67, 93, 216, 0.25);
+}
+
+.modal-dark .form-label {
+  color: #e0e0f0;
+}
+
+.modal-dark .form-control::placeholder {
+  color: #a7a7b7;
+}
+
+.modal-dark .input-group-text {
+  background-color: #3a3a55;
+  border: 1px solid #454570;
+  color: #d0d0e8;
+}
+
+.modal-dark .form-control-plaintext {
+  color: #ffffff;
+}
+
+.modal-dark a {
+  color: #8ea2ff;
+  text-decoration: none;
+}
+
+.modal-dark a:hover {
+  color: #b8c4ff;
+  text-decoration: underline;
+}

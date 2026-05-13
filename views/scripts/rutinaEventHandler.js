@@ -76,13 +76,13 @@ function renderRoutine() {
     const routineContent = document.getElementById("routineContent");
 
     if (!state.currentRoutine) {
-        emptyState.style.display = "block";
-        routineContent.style.display = "none";
+        emptyState.classList.remove("is-hidden");
+        routineContent.classList.add("is-hidden");
         return;
     }
 
-    emptyState.style.display = "none";
-    routineContent.style.display = "block";
+    emptyState.classList.add("is-hidden");
+    routineContent.classList.remove("is-hidden");
 
     mostrarRutina(state.currentRoutine);
     updateProgress(state.currentRoutine);
@@ -92,7 +92,7 @@ function renderRoutine() {
 function updateViewMoreButton() {
     const viewMoreBtn = document.getElementById("viewRoutinesBtn");
     if (viewMoreBtn) {
-        viewMoreBtn.style.display = state.isLogged && state.savedRoutines.length > 0 ? "block" : "none";
+        viewMoreBtn.classList.toggle("is-hidden", !(state.isLogged && state.savedRoutines.length > 0));
     }
 }
 
@@ -286,7 +286,7 @@ function displaySavedRoutinesModal() {
     if (state.savedRoutines.length === 0) {
         listContainer.innerHTML = `
             <div class="text-center py-4">
-                <p style="color: #b0b0cc;">No hay rutinas guardadas</p>
+                <p class="empty-routines-message">No hay rutinas guardadas</p>
             </div>
         `;
         return;
@@ -322,6 +322,7 @@ function displaySavedRoutinesModal() {
         dateDetail.className = "routine-item-detail";
         const dateIcon = document.createElement("i");
         dateIcon.className = "fa-solid fa-calendar routine-item-icon";
+        dateIcon.setAttribute("aria-hidden", "true");
         const dateSpan = document.createElement("span");
         dateSpan.textContent = formattedDate;
         dateDetail.appendChild(dateIcon);
@@ -332,6 +333,7 @@ function displaySavedRoutinesModal() {
         daysDetail.className = "routine-item-detail";
         const daysIcon = document.createElement("i");
         daysIcon.className = "fa-solid fa-layer-group routine-item-icon";
+        daysIcon.setAttribute("aria-hidden", "true");
         const daysSpan = document.createElement("span");
         daysSpan.textContent = `${routine.days.length} días`;
         daysDetail.appendChild(daysIcon);
@@ -342,6 +344,7 @@ function displaySavedRoutinesModal() {
         exDetail.className = "routine-item-detail";
         const exIcon = document.createElement("i");
         exIcon.className = "fa-solid fa-dumbbell routine-item-icon";
+        exIcon.setAttribute("aria-hidden", "true");
         const exSpan = document.createElement("span");
         exSpan.textContent = `${totalExercises} ejercicios`;
         exDetail.appendChild(exIcon);

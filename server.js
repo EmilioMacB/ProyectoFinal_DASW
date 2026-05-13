@@ -34,11 +34,15 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "https://cdn.jsdelivr.net", "https://kit.fontawesome.com"],
-      styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.jsdelivr.net", "https://fonts.googleapis.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://ka-f.fontawesome.com"],
+      scriptSrc: ["'self'", "https://cdn.jsdelivr.net"],
+      scriptSrcElem: ["'self'", "https://cdn.jsdelivr.net"],
+      scriptSrcAttr: ["'none'"],
+      styleSrc: ["'self'", "https://cdn.jsdelivr.net"],
+      styleSrcElem: ["'self'", "https://cdn.jsdelivr.net"],
+      styleSrcAttr: ["'none'"],
+      fontSrc: ["'self'", "data:"],
       imgSrc: ["'self'", "data:", "https://training.fit", "https://i.pinimg.com", "https://wallpapergod.com"],
-      connectSrc: ["'self'", "https://ka-f.fontawesome.com"],
+      connectSrc: ["'self'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],
       frameAncestors: ["'self'"],
@@ -53,11 +57,19 @@ app.use(helmet({
 }));
 
 // Cross-Origin-Embedder-Policy header (debe ser middleware separado en Helmet 8.x)
-app.use(helmet.crossOriginEmbedderPolicy({ policy: "unsafe-none" }));
+app.use(helmet.crossOriginEmbedderPolicy({ policy: "credentialless" }));
 
 // Permissions-Policy header para restringir acceso a APIs de hardware
 app.use((req, res, next) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()');
+  next();
+});
+
+// Cache explícito para evitar almacenamiento compartido de respuestas sensibles o HTML.
+app.use((req, res, next) => {
+  res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
   next();
 });
 
@@ -116,6 +128,7 @@ if (process.env.NODE_ENV === 'production') {
   }
 
 // Servir archivos estáticos desde la carpeta views
+app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
 app.use(express.static('views'));
 
 // Rutas para servir páginas HTML
@@ -294,6 +307,10 @@ app.get("/api/users/routines", authenticateToken, authenticatedLimiter, async (r
         console.error("Error al obtener rutinas:", error);
         res.status(500).json({ message: "Error al obtener rutinas", error });
     }
+});
+
+app.use((req, res) => {
+    res.status(404).json({ message: "Recurso no encontrado." });
 });
 
 // Iniciar el servidor

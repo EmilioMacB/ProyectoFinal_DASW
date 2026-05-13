@@ -54,7 +54,7 @@ function actualizarModal(pregunta) {
     modalTitle.textContent = pregunta.titulo;
 
     // Generar dinámicamente las opciones de respuesta
-    let contenidoHtml = '<div class="card text-white bg-dark mb-3" style="max-width: 50rem;"><div class="card-body"><fieldset>';
+    let contenidoHtml = '<div class="card text-white bg-dark mb-3 questionnaire-card"><div class="card-body"><fieldset>';
     pregunta.opciones.forEach(opcion => {
         contenidoHtml += `
             <div class="radio-input">
@@ -68,10 +68,11 @@ function actualizarModal(pregunta) {
     contenidoHtml += '</fieldset></div></div>';
 
     // Barra de progreso y botón
+    const progressPercentage = ((preguntaActual + 1) / preguntas.length) * 100;
     contenidoHtml += `
-        <div style="max-width: 700px; margin: auto; margin-bottom: 20px;">
+        <div class="questionnaire-progress-wrap">
             <div class="progress">
-                <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="${((preguntaActual + 1) / preguntas.length) * 100}" aria-valuemin="0" aria-valuemax="100" style="width: ${((preguntaActual + 1) / preguntas.length) * 100}%;">
+                <div class="progress-bar progress-bar-striped progress-bar-animated progress-${progressPercentage}" role="progressbar" aria-valuenow="${progressPercentage}" aria-valuemin="0" aria-valuemax="100">
                 </div>
             </div>
         </div>
