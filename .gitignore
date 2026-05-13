@@ -95,3 +95,6 @@ venv/
 
 # Local environment
 local.config.js
+
+# Logs de la aplicacion
+logs/

@@ -1,16 +1,31 @@
 require("dotenv").config();
-const helmet = require("helmet"); // libreria para agregar Content Security Policy
+
+// ─── Validación fail-fast de variables de entorno requeridas ──────────────────
+const REQUIRED_ENV = ['JWT_SECRET', 'MONGODB_URI', 'NODE_ENV', 'PORT'];
+for (const key of REQUIRED_ENV) {
+  if (!process.env[key]) {
+    console.error(`[FATAL] Variable de entorno faltante: ${key}`);
+    process.exit(1);
+  }
+}
+
+const logger = require('./logger');
+const helmet = require("helmet");
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { v4: uuidv4 } = require('uuid');
 const { rateLimit, ipKeyGenerator } = require('express-rate-limit');
 const User = require("./models/user");
 const Exercise = require("./models/exercise");
-const mongoSanitize = require('express-mongo-sanitize'); // librería para prevenir inyecciones NoSQL
+const mongoSanitize = require('express-mongo-sanitize');
+
 const app = express();
-const PORT = process.env.PORT; // Cambia el puerto si es necesario
+const PORT = process.env.PORT;
+const JWT_SECRET = process.env.JWT_SECRET;
+
 const PRODUCTION_BASE_URL = new URL(process.env.APP_BASE_URL || "https://midominio.com");
 PRODUCTION_BASE_URL.protocol = "https:";
 PRODUCTION_BASE_URL.pathname = "/";
@@ -22,14 +37,13 @@ function buildHttpsRedirectUrl(req) {
   const safePath = requestPath.startsWith("/") && !requestPath.startsWith("//") && !requestPath.includes("\\")
     ? requestPath
     : "/";
-
   return new URL(safePath, PRODUCTION_BASE_URL.origin).toString();
 }
 
-// Ocultar el framework usado 
+// ─── Ocultar el framework usado ───────────────────────────────────────────────
 app.disable("x-powered-by");
 
-// Cabeceras de seguridad con Helmet (incluye HSTS y CSP)
+// ─── Cabeceras de seguridad con Helmet (HSTS + CSP) ──────────────────────────
 app.use(helmet({
   contentSecurityPolicy: {
     directives: {
@@ -50,22 +64,22 @@ app.use(helmet({
     },
   },
   hsts: {
-    maxAge: 31536000, // 1 año en segundos
+    maxAge: 31536000,
     includeSubDomains: true,
     preload: true
   }
 }));
 
-// Cross-Origin-Embedder-Policy header (debe ser middleware separado en Helmet 8.x)
+// Cross-Origin-Embedder-Policy
 app.use(helmet.crossOriginEmbedderPolicy({ policy: "credentialless" }));
 
-// Permissions-Policy header para restringir acceso a APIs de hardware
+// Permissions-Policy
 app.use((req, res, next) => {
   res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()');
   next();
 });
 
-// Cache explícito para evitar almacenamiento compartido de respuestas sensibles o HTML.
+// Cache explícito
 app.use((req, res, next) => {
   res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
   res.setHeader("Pragma", "no-cache");
@@ -73,247 +87,246 @@ app.use((req, res, next) => {
   next();
 });
 
-const JWT_SECRET = process.env.JWT_SECRET;
-
-
-
-// Rate Limiting para usuarios autenticados (Por userId)
+// ─── Rate Limiters ────────────────────────────────────────────────────────────
 const authenticatedLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 50, // Límite de 50 peticiones por usuario en este lapso
-    keyGenerator: (req) => ipKeyGenerator(req.ip || req.userId), // Identificamos al usuario por su ID (extraído del JWT) o por su IP si no hay ID
-    message: { message: "Has superado el límite de acciones para tu cuenta. Intenta más tarde." }
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+  keyGenerator: (req) => ipKeyGenerator(req.ip || req.userId),
+  message: { message: "Has superado el límite de acciones para tu cuenta. Intenta más tarde." }
 });
 
-// Middleware para analizar JSON con límite de tamaño (Prevención de DoS por payloads gigantes)
-app.use(express.json({ limit: '10kb' }));
-
-// Sanitización de datos contra inyecciones NoSQL
-app.use(mongoSanitize());
-
-
-// Rate Limiting Global (Por IP)
 const globalLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 100, // Límite de 100 peticiones por IP cada 15 min
-    message: { message: "Demasiadas peticiones desde esta IP, por favor intenta más tarde." }
-  });
-  app.use(globalLimiter);
-  
-  // Rate Limiting Específico para Login (Prevención de fuerza bruta)
-  const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000, // 15 minutos
-    max: 5, // Solo 5 intentos de login fallidos por IP
-    message: { message: "Demasiados intentos de inicio de sesión. Intenta en 15 minutos." }
-  });
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: { message: "Demasiadas peticiones desde esta IP, por favor intenta más tarde." }
+});
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { message: "Demasiados intentos de inicio de sesión. Intenta en 15 minutos." }
+});
 
-// CORS Estricto
+// ─── Body parsing y sanitización ─────────────────────────────────────────────
+app.use(express.json({ limit: '10kb' }));
+app.use(mongoSanitize());
+app.use(globalLimiter);
+
+// ─── CORS estricto ────────────────────────────────────────────────────────────
 const corsOptions = {
   origin: process.env.NODE_ENV === 'production' ? PRODUCTION_BASE_URL.origin : 'http://localhost:3000',
-  methods: ['GET', 'POST'], // Solo permitimos los métodos que tu API realmente usa
-  allowedHeaders: ['Content-Type', 'Authorization'] // Solo permitimos estos headers
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 };
 app.use(cors(corsOptions));
 
-// Forzar HTTPS en Producción
-if (process.env.NODE_ENV === 'production') {
-    app.use((req, res, next) => {
-      if (req.header('x-forwarded-proto') !== 'https') {
-        res.redirect(301, buildHttpsRedirectUrl(req));
-      } else {
-        next();
-      }
-    });
-  }
+// ─── Logging: requestId + userId + IP en cada request ────────────────────────
+app.use((req, res, next) => {
+  req.requestId = uuidv4();
+  logger.info({
+    event: 'REQUEST',
+    requestId: req.requestId,
+    ip: req.ip,
+    method: req.method,
+    path: req.path,
+    userId: req.userId || 'unauthenticated',
+  });
+  next();
+});
 
-// Servir archivos estáticos desde la carpeta views
+// ─── Forzar HTTPS en producción ───────────────────────────────────────────────
+if (process.env.NODE_ENV === 'production') {
+  app.use((req, res, next) => {
+    if (req.header('x-forwarded-proto') !== 'https') {
+      res.redirect(301, buildHttpsRedirectUrl(req));
+    } else {
+      next();
+    }
+  });
+}
+
+// ─── Archivos estáticos ───────────────────────────────────────────────────────
 app.use('/fontawesome', express.static(__dirname + '/node_modules/@fortawesome/fontawesome-free'));
 app.use(express.static('views'));
 
-// Rutas para servir páginas HTML
-app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/views/home.html');
-});
+// ─── Rutas HTML ───────────────────────────────────────────────────────────────
+app.get('/', (req, res) => res.sendFile(__dirname + '/views/home.html'));
+app.get('/rutina', (req, res) => res.sendFile(__dirname + '/views/rutina.html'));
+app.get('/ejercicios', (req, res) => res.sendFile(__dirname + '/views/ejercicios.html'));
+app.get('/calendario', (req, res) => res.sendFile(__dirname + '/views/calendario.html'));
 
-app.get('/rutina', (req, res) => {
-    res.sendFile(__dirname + '/views/rutina.html');
-});
-
-app.get('/ejercicios', (req, res) => {
-    res.sendFile(__dirname + '/views/ejercicios.html');
-});
-
-app.get('/calendario', (req, res) => {
-    res.sendFile(__dirname + '/views/calendario.html');
-});
-
-// Middleware de autenticación JWT
+// ─── Middleware de autenticación JWT ─────────────────────────────────────────
 function authenticateToken(req, res, next) {
-    const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1]; // "Bearer <token>"
-    if (!token) return res.status(401).json({ message: "Token requerido." });
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (!token) {
+    logger.warn({ event: 'AUTH_NO_TOKEN', ip: req.ip, path: req.path, requestId: req.requestId });
+    return res.status(401).json({ message: "Token requerido." });
+  }
 
-    jwt.verify(token, JWT_SECRET, (err, decoded) => {
-        if (err) return res.status(403).json({ message: "Token inválido o expirado." });
-        req.userId = decoded.userId; // userId extraído del token firmado
-        next();
-    });
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
+    if (err) {
+      logger.warn({ event: 'AUTH_INVALID_TOKEN', ip: req.ip, path: req.path, requestId: req.requestId });
+      return res.status(403).json({ message: "Token inválido o expirado." });
+    }
+    req.userId = decoded.userId;
+    next();
+  });
 }
 
-// Conectar a MongoDB
+// ─── Conexión a MongoDB ───────────────────────────────────────────────────────
 mongoose
-    .connect(process.env.MONGODB_URI)
-    .then(() => console.log("Conectado a MongoDB en la base de datos 'Bfit'"))
-    .catch((err) => console.error("Error al conectar a MongoDB:", err));
+  .connect(process.env.MONGODB_URI)
+  .then(() => logger.info({ event: 'DB_CONNECTED', message: "Conectado a MongoDB" }))
+  .catch((err) => {
+    logger.error({ event: 'DB_CONNECTION_ERROR', message: err.message });
+    process.exit(1);
+  });
 
-// Ruta para registrar usuarios
+// ─── Registro de usuario ──────────────────────────────────────────────────────
 app.post("/api/users/register", async (req, res) => {
-    const { Name, Email, Password } = req.body;
+  const { Name, Email, Password } = req.body;
 
-    try {
-        const userExists = await User.findOne({ Email });
-        if (userExists) {
-            return res.status(400).json({ message: "El usuario ya está registrado." });
-        }
-
-        const newUser = new User({ Name, Email, Password });
-        await newUser.save();
-
-        res.status(201).json({ message: "Usuario registrado con éxito" });
-    } catch (error) {
-        console.error("Error al registrar usuario:", error);
-        res.status(500).json({ message: "Error al registrar usuario", error });
+  try {
+    const userExists = await User.findOne({ Email });
+    if (userExists) {
+      logger.warn({ event: 'AUTH_REGISTER_DUPLICATE', email: Email, ip: req.ip, requestId: req.requestId });
+      return res.status(400).json({ message: "El usuario ya está registrado." });
     }
+
+    const newUser = new User({ Name, Email, Password });
+    await newUser.save();
+
+    logger.info({ event: 'AUTH_REGISTER_SUCCESS', email: Email, ip: req.ip, requestId: req.requestId });
+    res.status(201).json({ message: "Usuario registrado con éxito" });
+  } catch (error) {
+    logger.error({ event: 'ERROR', endpoint: '/api/users/register', message: error.message, requestId: req.requestId });
+    res.status(500).json({ message: "Error al registrar usuario" });
+  }
 });
 
-// Ruta para iniciar sesión
+// ─── Login ────────────────────────────────────────────────────────────────────
 app.post("/api/users/login", loginLimiter, async (req, res) => {
-    const { Email, Password } = req.body;
+  const { Email, Password } = req.body;
 
-    try {
-        const user = await User.findOne({ Email });
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado." });
-        }
-
-        const isPasswordValid = await bcrypt.compare(Password, user.Password);
-        if (!isPasswordValid) {
-            return res.status(401).json({ message: "Correo o contraseña incorrecta." });
-        }
-
-        const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "2h" });
-        res.status(200).json({
-            message: "Inicio de sesión exitoso",
-            token,
-            userName: user.Name,
-            routines: user.Routines || [],
-        });
-    } catch (error) {
-        console.error("Error al iniciar sesión:", error);
-        res.status(500).json({ message: "Error al iniciar sesión", error });
+  try {
+    const user = await User.findOne({ Email });
+    if (!user) {
+      logger.warn({ event: 'AUTH_LOGIN_FAILED', reason: 'user_not_found', email: Email, ip: req.ip, requestId: req.requestId });
+      return res.status(404).json({ message: "Usuario no encontrado." });
     }
+
+    const isPasswordValid = await bcrypt.compare(Password, user.Password);
+    if (!isPasswordValid) {
+      logger.warn({ event: 'AUTH_LOGIN_FAILED', reason: 'wrong_password', email: Email, ip: req.ip, requestId: req.requestId });
+      return res.status(401).json({ message: "Correo o contraseña incorrecta." });
+    }
+
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "2h" });
+    logger.info({ event: 'AUTH_LOGIN_SUCCESS', userId: user._id, ip: req.ip, requestId: req.requestId });
+    res.status(200).json({
+      message: "Inicio de sesión exitoso",
+      token,
+      userName: user.Name,
+      routines: user.Routines || [],
+    });
+  } catch (error) {
+    logger.error({ event: 'ERROR', endpoint: '/api/users/login', message: error.message, requestId: req.requestId });
+    res.status(500).json({ message: "Error al iniciar sesión" });
+  }
 });
 
-// Ruta para generar una rutina personalizada basada en la base de datos
+// ─── Generar rutina ───────────────────────────────────────────────────────────
 app.post("/api/users/generateRoutine", async (req, res) => {
-    const { nivel, objetivo, dias } = req.body;
+  const { nivel, objetivo, dias } = req.body;
 
-    try {
-        console.log("Respuestas recibidas:", { nivel, objetivo, dias });
+  try {
+    const diasNumero = dias === "1-2" ? 2 : dias === "3-4" ? 4 : 5;
+    const ejercicios = await Exercise.find({ level: nivel, category: objetivo });
 
-        // Convertir `dias` a un número, por si llega como string
-        const diasNumero = dias === "1-2" ? 2 : dias === "3-4" ? 4 : 5;
+    if (ejercicios.length > 0) {
+      const rutina = [];
+      const ejerciciosPorDia = Math.ceil(ejercicios.length / diasNumero);
 
-        // Buscar ejercicios en la base de datos
-        const ejercicios = await Exercise.find({ level: nivel, category: objetivo });
+      for (let i = 0; i < diasNumero; i++) {
+        rutina.push({
+          day: `Día ${i + 1}`,
+          exercises: ejercicios.slice(i * ejerciciosPorDia, (i + 1) * ejerciciosPorDia).map(e => ({
+            name: e.name,
+            reps: e.reps,
+            img: e.img,
+            video: e.video,
+          })),
+        });
+      }
 
-        console.log("Ejercicios encontrados:", ejercicios);
-
-        if (ejercicios.length > 0) {
-            const rutina = [];
-            const ejerciciosPorDia = Math.ceil(ejercicios.length / diasNumero);
-
-            for (let i = 0; i < diasNumero; i++) {
-                rutina.push({
-                    day: `Día ${i + 1}`,
-                    exercises: ejercicios.slice(i * ejerciciosPorDia, (i + 1) * ejerciciosPorDia).map(ejercicio => ({
-                        name: ejercicio.name,
-                        reps: ejercicio.reps,
-                        img: ejercicio.img,
-                        video: ejercicio.video,
-                    })),
-                });
-            }
-
-            console.log("Rutina generada:", rutina);
-            res.status(200).json({ message: "Rutina generada exitosamente", routine: rutina });
-        } else {
-            console.log("No se encontraron ejercicios para los criterios seleccionados");
-            res.status(404).json({ message: "No se encontraron ejercicios para los criterios seleccionados" });
-        }
-    } catch (error) {
-        console.error("Error al generar la rutina:", error);
-        res.status(500).json({ message: "Error al generar la rutina", error });
+      logger.info({ event: 'CRUD_GENERATE_ROUTINE', nivel, objetivo, dias, ip: req.ip, requestId: req.requestId });
+      res.status(200).json({ message: "Rutina generada exitosamente", routine: rutina });
+    } else {
+      logger.warn({ event: 'CRUD_GENERATE_ROUTINE_EMPTY', nivel, objetivo, dias, ip: req.ip, requestId: req.requestId });
+      res.status(404).json({ message: "No se encontraron ejercicios para los criterios seleccionados" });
     }
+  } catch (error) {
+    logger.error({ event: 'ERROR', endpoint: '/api/users/generateRoutine', message: error.message, requestId: req.requestId });
+    res.status(500).json({ message: "Error al generar la rutina" });
+  }
 });
 
-
-// Ruta para guardar la rutina en el perfil del usuario
+// ─── Guardar rutina ───────────────────────────────────────────────────────────
 app.post("/api/users/saveRoutine", authenticateToken, authenticatedLimiter, async (req, res) => {
-    const userId = req.userId; // del token, nunca del body
-    const { routine } = req.body;
+  const userId = req.userId;
+  const { routine } = req.body;
 
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-
-        const newRoutine = {
-            name: `Rutina ${user.Routines.length + 1}`,
-            days: routine,
-            createdAt: new Date(),
-        };
-
-        user.Routines.push(newRoutine);
-        await user.save();
-
-        res.status(200).json({
-            message: "Rutina guardada exitosamente",
-            routine: newRoutine,
-        });
-    } catch (error) {
-        console.error("Error al guardar la rutina:", error);
-        res.status(500).json({ message: "Error al guardar la rutina", error });
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      logger.warn({ event: 'CRUD_SAVE_ROUTINE_USER_NOT_FOUND', userId, requestId: req.requestId });
+      return res.status(404).json({ message: "Usuario no encontrado" });
     }
+
+    const newRoutine = {
+      name: `Rutina ${user.Routines.length + 1}`,
+      days: routine,
+      createdAt: new Date(),
+    };
+
+    user.Routines.push(newRoutine);
+    await user.save();
+
+    logger.info({ event: 'CRUD_SAVE_ROUTINE', userId, ip: req.ip, requestId: req.requestId });
+    res.status(200).json({ message: "Rutina guardada exitosamente", routine: newRoutine });
+  } catch (error) {
+    logger.error({ event: 'ERROR', endpoint: '/api/users/saveRoutine', message: error.message, requestId: req.requestId });
+    res.status(500).json({ message: "Error al guardar la rutina" });
+  }
 });
 
-// Ruta para obtener todas las rutinas del usuario
+// ─── Obtener rutinas ──────────────────────────────────────────────────────────
 app.get("/api/users/routines", authenticateToken, authenticatedLimiter, async (req, res) => {
-    const userId = req.userId;
+  const userId = req.userId;
 
-    try {
-        const user = await User.findById(userId);
-        if (!user) {
-            return res.status(404).json({ message: "Usuario no encontrado" });
-        }
-
-        res.status(200).json({
-            message: "Rutinas obtenidas exitosamente",
-            routines: user.Routines || [],
-        });
-    } catch (error) {
-        console.error("Error al obtener rutinas:", error);
-        res.status(500).json({ message: "Error al obtener rutinas", error });
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      logger.warn({ event: 'CRUD_GET_ROUTINES_USER_NOT_FOUND', userId, requestId: req.requestId });
+      return res.status(404).json({ message: "Usuario no encontrado" });
     }
+
+    logger.info({ event: 'CRUD_GET_ROUTINES', userId, ip: req.ip, requestId: req.requestId });
+    res.status(200).json({ message: "Rutinas obtenidas exitosamente", routines: user.Routines || [] });
+  } catch (error) {
+    logger.error({ event: 'ERROR', endpoint: '/api/users/routines', message: error.message, requestId: req.requestId });
+    res.status(500).json({ message: "Error al obtener rutinas" });
+  }
 });
 
+// ─── 404 ──────────────────────────────────────────────────────────────────────
 app.use((req, res) => {
-    res.status(404).json({ message: "Recurso no encontrado." });
+  logger.warn({ event: 'NOT_FOUND', ip: req.ip, method: req.method, path: req.path, requestId: req.requestId });
+  res.status(404).json({ message: "Recurso no encontrado." });
 });
 
-// Iniciar el servidor
+// ─── Inicio del servidor ──────────────────────────────────────────────────────
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  logger.info({ event: 'SERVER_START', port: PORT, env: process.env.NODE_ENV });
 });
